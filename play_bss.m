@@ -29,7 +29,6 @@ x2_truth = rand(2,1);
 
 % Output signal.
 y = H1*x1_truth + H2*x2_truth;
-
 ytilde = [diag(Psi1*h{1}) diag(Psi2*h{2})] * [U*x1_truth; U*x2_truth];
 
 cvx_begin
