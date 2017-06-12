@@ -1,0 +1,184 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts,amssymb}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+
+\def\W{{\mathbf W}}
+\def\X{{\mathbf X}}
+\def\Y{{\mathbf Y}}
+\def\R{{\mathbf R}}
+\def\P{{\mathbf P}}
+\def\K{{\mathbf K}}
+\def\Z{{\mathbf Z}}
+\def\A{{\mathbf A}}
+\def\B{{\mathbf B}}
+\def\C{{\mathbf C}}
+\def\D{{\mathbf D}}
+\def\I{{\mathbf I}}
+\def\J{{\mathbf J}}
+\def\L{{\mathbf L}}
+\def\Q{{\mathbf Q}}
+\def\F{{\mathbf F}}
+\def\E{{\mathbf E}}
+\def\U{{\mathbf U}}
+\def\V{{\mathbf V}}
+\def\G{{\mathbf G}}
+\def\miH{{\mathbf H}}
+\def\S{{\mathbf S}}
+\def\T{{\mathbf T}}
+\def\M{{\mathbf M}}
+\def\0{{\mathbf 0}}
+
+\def\m{{\mathbf m}}
+\def\w{{\mathbf w}}
+\def\v{{\mathbf v}}
+\def\x{{\mathbf x}}
+\def\y{{\mathbf y}}
+\def\z{{\mathbf z}}
+\def\k{{\mathbf k}}
+\def\c{{\mathbf c}}
+\def\u{{\mathbf u}}
+\def\h{{\mathbf h}}
+\def\f{{\mathbf f}}
+\def\a{{\mathbf a}}
+\def\b{{\mathbf b}}
+\def\d{{\mathbf d}}
+\def\g{{\mathbf g}}
+\def\s{{\mathbf s}}
+\def\n{{\mathbf n}}
+\def\p{{\mathbf p}}
+\def\q{{\mathbf q}}
+\def\r{{\mathbf r}}
+
+\def\Sigmab{{\boldsymbol \Sigma}}
+\def\Lambdab{{\boldsymbol \Lambda}}
+\def\Psib{{\boldsymbol \Psi}}
+\def\Phib{{\boldsymbol \Phi}}
+\def\Omegab{{\boldsymbol \Omega}}
+\def\Thetab{{\boldsymbol \Theta}}
+
+\def\lambdab{{\boldsymbol \lambda}}
+\def\psib{{\boldsymbol \psi}}
+
+\def\1{{\boldsymbol 1}}
+
+\input{mysymbol.sty}
+
+\begin{document}
+
+\section*{Deconvolution}
+
+\begin{align}
+\label{eq:id_feasibility}
+\hbx=\mathop{\text{find}} \quad & \{\bbx\},  \\
+\text{s. to:} \quad & \bar{\y} = \bbC_{\ccalM} \bbH \x, \quad \|\x\|_{0}\leq S,\nonumber
+\end{align}
+
+\begin{itemize}
+  \item If $M < S$, the recovery is ill-posed.
+  \item With known support, invertibility of $(\bbC_{\ccalM} \bbH \bbC_{\ccalS}^T)\in\reals^{M\times S}$.
+  \item With unknown support, if $\bbC_{\ccalM} \bbH$ is full spark then recovery of $\bbx$ is guaranteed provided that $M \geq 2S$.
+\end{itemize}
+
+\section*{Blind deconvolution and filter identification}
+
+\noindent
+Let $\bbM:=\bbC_\ccalM \bbV \left(\Psib^T \odot \U^T \right)^T \in \reals^{M\!\times\! NL}$,
+\begin{align}
+\label{eq:bid_feasibility}
+   \{\hbx,\hbh\}=\text{find} \quad &\{\x,\h\}, \\
+  \text{s. to} \quad & \bar{\y} = \bbM \text{vec}(\x \h^T), \;\; \|\x\|_0 \leq S. \nonumber
+\end{align}
+
+\noindent
+Define $\bbZ\!=\!\bbx\bbh^T\in\reals^{N\times L}$,
+\begin{align}
+\label{eq:bid_minimization}
+   \hbZ =\text{min} \quad &\{\text{rank}(\Z)\}, \\
+  \text{s. to} \quad & \bar{\y} = \M \text{vec}\left(\Z\right), \;\; \|\Z\|_{2,0} \leq S. \nonumber
+ \end{align}
+
+ \begin{itemize}
+   \item Condition on the graph-shift operator. Let $\ccalI_{S}$ be a set of row indices such that $\mathrm{spark}(\bbU_{\ccalI_{S}}) \leq S$. Then, the solutions of \eqref{eq:bid_minimization} and \eqref{eq:bid_feasibility} are equivalent providing that 
+	\begin{equation}\label{eq:condition_cardinality_lambdas}
+		\min_{\ccalI_{S}} \big| \{ \lambda_i \}_{i \in \ccalI^c_{S}} \big| > L-1.
+	\end{equation}
+ \end{itemize}
+
+\section*{Source separation}
+
+Let $\bbx^+ \in \reals^{PN}$ denote the result of stacking the vectors $\bbx_1, ..., \bbx_P$ and $\bbH^+ \in \reals^{N \times NL}$ denote column-concatenation of $\bbH_1, ..., \bbH_P$.
+
+\begin{align}
+\label{eq:ss_feasibility}
+\{\hbx_p\}_{p=1}^P=\mathop{\text{find}} \quad & \{\bbx_p\}_{p=1}^P,  \\
+\text{s. to:} \quad & \bar{\y} = \bbC_{\ccalM} \bbH^+ \x^+, \quad \|\x^+\|_{0}\leq S. \nonumber
+\end{align}
+
+\noindent
+Question: Conditions for identifiability (with known and unknown support). See two-node example.
+
+\includepdf[pages=-]{sstwonode.pdf}
+
+\section*{Blind source separation and identification}
+
+\begin{align}
+\label{eq:bss_feasibility}
+   \{\hbx_p,\hbh_p\}_{p=1}^{P}=\text{find} \quad &\{\x_p,\h_p\}_{p=1}^{P}, \\
+  \text{s. to} \quad & \bar{\y} = \bbM \sum_{p=1}^{P} \text{vec}(\x_p \h_p^T), \;\; \|\x^+\|_0 \leq S. \nonumber
+\end{align}
+
+\noindent
+Define $\bbZ_p = \bbx_p\bbh_p^T$ and $\bbZ = \sum_{p=1}^P \bbZ_p$.
+
+\noindent
+Question: Can we establish a minimization similar to \eqref{eq:bid_minimization} with conditions such as \eqref{eq:condition_cardinality_lambdas}?
+
+\noindent
+To consider:
+\begin{itemize}
+  \item Rank of a matrix sum. $\text{rank}(\bbZ_p)=1 \ \forall \ p \in \{1,...,P\}$, $\text{rank}(\bbZ) \leq P$.
+  \item Establishing linear independence of the $\bbx_p$s and/or the $\bbh_p$s, it might be possible to say that $\text{rank}(\bbZ)$ is exactly $P$. Could this be exploited?
+\end{itemize}
+
+\subsection*{Convex approximations}
+
+\begin{align}
+\label{eq:bss_convex_minimization2}
+   \{\hbZ_p\}_{p=1}^{P} =\text{min} \quad &\{\sum_{p=1}^P \alpha_p \|\Z_p\|_{*}\}, \\
+  \text{s. to} \quad & \bar{\y} = \M \text{vec}\left(\Z\right). \nonumber
+\end{align}
+
+\noindent
+Choice of $\alpha_p$?
+
+\begin{align}
+\label{eq:bss_convex_minimization1}
+   \hbZ =\text{min} \quad &\{\|\Z\|_{*}\}, \\
+  \text{s. to} \quad & \bar{\y} = \M \text{vec}\left(\Z\right). \nonumber
+\end{align}
+
+\noindent
+Question: What can we say about the solution of the original problem based on the solution to these approximations?
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{Source_Sep_Nfilters_Ninputsknown_b.jpg}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{Source_Sep_Nfiltersknown_Ninputs_b.jpg}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{Blind_Source_Sep_Nfilters_Ninputs_v2.jpg}
+\end{figure}
+
+\end{document}
