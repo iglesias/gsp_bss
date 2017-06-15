@@ -138,7 +138,7 @@ The following two approaches can be formulated as a linear program.
   \{\hbx^{+^{(i)}}\}=\text{argmin} & \sum_{n=1}^{NP} (|\hat{x}^{+^{(i-1)}}_n| + \epsilon_0)^{-1} |x^+_n|, \\
   \text{s. to:} \quad & \bar{\y} = \bbC_{\ccalM} \bbH^+ \x^+, \nonumber
   \end{align}
-    and finally set $\hbx^+=\hbx^{+^{(I)}}$.
+    and finally set $\hbx^+=\hbx^{+^{(I)}}$. For the initialization, $\hbx^{+^{(1)}}=(\bbC_{\ccalM} \bbH^+)^\dagger \bar{\y}$, where $A^\dagger$ denotes the pseudoinverse of $A$ (least-squares solution).
 \end{itemize}
 
 \section*{Blind source separation and identification}
