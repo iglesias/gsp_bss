@@ -120,10 +120,26 @@ Let $\bbx^+ \in \reals^{NP}$ denote the result of stacking the vectors $\bbx_1, 
 \text{s. to:} \quad & \bar{\y} = \bbC_{\ccalM} \bbH^+ \x^+, \quad \|\x^+\|_{0}\leq S. \nonumber
 \end{align}
 
-\noindent
-Question: Conditions for identifiability (with known and unknown support). See two-node example.
+\subsection*{Convex approximations}
 
-\includepdf[pages=-]{sstwonode.pdf}
+The following two approaches can be formulated as a linear program.
+
+\begin{itemize}
+  \item Substitute the $\ell_0$ norm in \eqref{eq:ss_feasibility} for the $\ell_1$ norm and solve
+  \begin{align}
+  \label{eq:ss_l1norm}
+  \{\hbx^+\}=\text{argmin} \quad &\{\|\x^+\|_{1}\}, \\
+  \text{s. to:} \quad & \bar{\y} = \bbC_{\ccalM} \bbH^+ \x^+. \nonumber
+  \end{align}
+
+  \item Instead of the $\ell_1$ norm in \eqref{eq:ss_l1norm}, minimize $\sum_{n=1}^{NP} \log(|x^+_n|+\epsilon_0)$ where $\epsilon_0$ denotes a small positive constant. This can be solved iteratively using the majorization-minimization algorithm and a first-order Taylor series expansion of this new objective. Let $i=1,...,I$ denote an iteration index, then at each iteration solve
+  \begin{align}
+  \label{eq:ss_mm}
+  \{\hbx^{+^{(i)}}\}=\text{argmin} & \sum_{n=1}^{NP} (|\hat{x}^{+^{(i-1)}}_n| + \epsilon_0)^{-1} |x^+_n|, \\
+  \text{s. to:} \quad & \bar{\y} = \bbC_{\ccalM} \bbH^+ \x^+, \nonumber
+  \end{align}
+    and finally set $\hbx^+=\hbx^{+^{(I)}}$.
+\end{itemize}
 
 \section*{Blind source separation and identification}
 
