@@ -9,6 +9,8 @@ function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y,A,V,taux,tauh,varargin)
 %           V = rows of the inverse Graph Fourier transform which correspond to the observations
 %           taux = regularization parameter for x
 %           tauh = regularization parameter for h
+%           knownSupportFlag = whether the support of the input signals (assumed the same) is known
+%           S = cardinality of the input signals' support
 %           x_known = known values of the graph signal x. Could be an empty matrix or optional
 %           known_indexes = indexes of the known values. Could be an empty matrix or optional
 %       
@@ -31,12 +33,22 @@ maxiter = 50;
 
 %% Check input parameters
 
-if nargin==5
+if nargin<7
+    knownSupportFlag = 0;
+    S = [];
+else 
+    assert(nargin==7 || nargin==9)
+    knownSupportFlag = varargin{1};
+    S = varargin{2};
+end
+
+if nargin<9
     known_indexes = [];
     x_known = [];
 else
-    x_known = varargin{1};
-    known_indexes = varargin{2};
+    assert(nargin==9)
+    x_known = varargin{3};
+    known_indexes = varargin{4};
 end
 
 %% Blind estimation using rank minimization: nuclear norm surrogate
@@ -44,7 +56,11 @@ end
 assert(size(A, 1) == length(y)) % this might change for sampled observations
 N = size(A, 1);
 % It is assumed that the filters have the same order.
-L = size(A, 2)/N;
+if knownSupportFlag
+    L = size(A, 2)/S;
+else
+    L = size(A, 2)/N;
+end
 B = V*A;
 
 % Length of the known signal values
@@ -53,17 +69,28 @@ N_known = length(known_indexes);
 % Initialization
 flag = 1;
 iter = 1;
-Z_old = reshape(pinv(B)*y,N,L);         % LS solution for initializing w
+% LS solution for initializing w
+if knownSupportFlag
+    Z_old = reshape(pinv(B)*y,S,L);
+else
+    Z_old = reshape(pinv(B)*y,N,L);
+end
 
 while (flag == 1 && iter <= maxiter)
+    fprintf('iteration %d\n', iter)
 
     wx = 1./(sqrt(sum(abs(Z_old).^2,2)) + epsilon_normx);
     wx(known_indexes) = 0;
     wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
     
     cvx_begin quiet
-        variable Z1(N,L);
-        variable Z2(N,L);
+        if knownSupportFlag
+            variable Z1(S,L);
+            variable Z2(S,L);
+        else
+            variable Z1(N,L);
+            variable Z2(N,L);
+        end
 
         Z = Z1+Z2;
         minimize( norm_nuc(Z) + taux*wx'*norms(Z,2,2) + tauh*norms(Z,2,1)*wh' );
@@ -79,11 +106,13 @@ while (flag == 1 && iter <= maxiter)
     
     if ~isempty(strfind(cvx_status,'Infeasible'))
         % Stop the algorithm
+        fprintf('Infeasible cvx\n')
         Z = randn(N,L);
         flag = 0;
     else
         if difference<1e-4
             % Converged
+            fprintf('Convergence reached\n')
             flag = 0;
         else
             % Did not converge

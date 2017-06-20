@@ -1,7 +1,7 @@
 clearvars
 
 % Number of nodes.
-N = 10;
+N = 20;
 % Edge existence probability.
 p = 0.1;
 % Adjacency matrix.
@@ -45,19 +45,27 @@ I = eye(N);
 % Number of non-zero input nodes.
 S = 2;
 
+xSupport = randperm(N, S);
+
 x1 = zeros(N, 1);
-x1Support = randperm(N, S);
-x1(x1Support) = rand(S, 1);
+x1(xSupport) = rand(S, 1);
 
 x2 = zeros(N, 1);
-x2Support = randperm(N, S);
-x2(x2Support) = rand(S, 1);
+x2(xSupport) = rand(S, 1);
 
 x = [x1; x2];
 y = H*x;
 
-A = kr(Psi', U')';
+Ubar = U(:, xSupport);
+A = kr(Psi', Ubar')';
 
-Z1 = x1*hLP';
-Z2 = x2*hHP';
-[Z1est, Z2est] = sparse_bss_nuclear(y, A, V, 1e-1, 0);
+Z1 = x1(xSupport)*hLP';
+Z2 = x2(xSupport)*hHP';
+knownSupportFlag = 1;
+[Z1est, Z2est] = sparse_bss_nuclear(y, A, V, 1e-1, 0, knownSupportFlag, S);
+
+[Z1 Z2]
+[Z1est Z2est]
+
+[Z1+Z2]
+[Z1est+Z2est]
