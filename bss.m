@@ -1,7 +1,7 @@
 clearvars
 
 % Number of nodes.
-N = 20;
+N = 100;
 % Edge existence probability.
 p = 0.1;
 % Adjacency matrix.
@@ -21,7 +21,7 @@ U = inv(V);
 lambda = diag(D);
 
 showFlag = 0;
-numFilterCoeffs = 3;
+numFilterCoeffs = 15;
 [hLP, hHP] = gsp_design_filters(lambda, numFilterCoeffs, showFlag);
 
 Psi = repmat(lambda, 1, numFilterCoeffs).^[0:numFilterCoeffs-1];
@@ -43,7 +43,7 @@ I = eye(N);
 
 % Input.
 % Number of non-zero input nodes.
-S = 2;
+S = 10;
 
 xSupport = randperm(N, S);
 

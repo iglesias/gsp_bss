@@ -1,7 +1,7 @@
-function [hLP, hHP] = gsp_design_filters(lambda, L, showFlag)
+function [hLP, hHP, hfLP, hfHP] = gsp_design_filters(lambda, L, showFlag, fig)
 %gsp_design_filters
-%   [hLP, hHP] = gsp_design_filters(lambda, L)
-%   [hLP, hHP] = gsp_design_filters(lambda, L, showFlag)
+%   [hLP, hHP, hfLP, hfHP] = gsp_design_filters(lambda, L)
+%   [hLP, hHP, hfLP, hfHP] = gsp_design_filters(lambda, L, showFlag)
 
 if nargin < 3
   showFlag = 0;
@@ -9,6 +9,10 @@ end
 
 if L > length(lambda)
   error('The order of the filters must be no larger than the number of eigenvalues.')
+end
+
+if showFlag && ~exist('fig', 'var')
+  fig = figure;
 end
 
 % Frequency responses.
@@ -24,7 +28,10 @@ hLP = PsiInv*hfLP;
 hHP = PsiInv*hfHP;
 
 if showFlag
-  figure
+  figure(fig)
+  clf
+
+  subplot(211)
   hold on
   plot(lambda, hfLP, 'o-')
   plot(lambda, hfHP, 'o-')
@@ -32,6 +39,13 @@ if showFlag
   plot(lambda, Psi(:, 1:L)*hHP, 'x-')
   hold off
   legend('True LP', 'True HP', 'Approx. LP', 'Approx. HP')
+
+  subplot(212)
+  hold on
+  plot(lambda, hfLP.*hfHP, 'o-')
+  plot(lambda, (Psi(:, 1:L)*hLP).*(Psi(:, 1:L)*hHP), 'x-')
+  hold off
+  legend('True LP-HP Hadamard', 'Approx. LP-HP Hadamard')
 end
 
 end
@@ -40,7 +54,7 @@ function y = regular(val)
 % Copied from gsp_design_regular.m in the GSP toolbox https://lts2.epfl.ch/gsp/.
 
 % Filter degree.
-d = 3;
+d = 10;
 
 if d == 0
   y = sin(pi/4*val);
