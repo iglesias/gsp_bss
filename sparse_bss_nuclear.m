@@ -93,7 +93,7 @@ while (flag == 1 && iter <= maxiter)
         end
 
         Z = Z1+Z2;
-        minimize( norm_nuc(Z) + taux*wx'*norms(Z,2,2) + tauh*norms(Z,2,1)*wh' );
+        minimize( norm_nuc(Z1) + norm_nuc(Z2) + taux*wx'*norms(Z,2,2) + tauh*norms(Z,2,1)*wh' );
         
         subject to
             B*Z(:) == y;
@@ -101,6 +101,11 @@ while (flag == 1 && iter <= maxiter)
                 Z(known_indexes(kk),:)*x_known(kk+1) == x_known(kk)*Z(known_indexes(kk+1),:);
             end
     cvx_end
+
+    if ~strcmp(cvx_status, 'Solved')
+        warning('cvx_status not equal to Solved.')
+        keyboard
+    end
 
     difference = norm(Z - Z_old,'fro')/norm(Z_old,'fro');
     
