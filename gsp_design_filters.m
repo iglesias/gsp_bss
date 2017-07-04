@@ -46,6 +46,8 @@ if showFlag
   plot(lambda, (Psi(:, 1:L)*hLP).*(Psi(:, 1:L)*hHP), 'x-')
   hold off
   legend('True LP-HP Hadamard', 'Approx. LP-HP Hadamard')
+
+  drawnow
 end
 
 end
@@ -54,7 +56,7 @@ function y = regular(val)
 % Copied from gsp_design_regular.m in the GSP toolbox https://lts2.epfl.ch/gsp/.
 
 % Filter degree.
-d = 10;
+d = 4;
 
 if d == 0
   y = sin(pi/4*val);
