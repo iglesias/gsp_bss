@@ -121,6 +121,7 @@ while (flag == 1 && iter <= maxiter)
             flag = 0;
         else
             % Did not converge
+            fprintf('Covergence NOT reached, difference=%d.\n', difference)
             Z_old = Z;
             iter = iter + 1;
         end
