@@ -98,13 +98,14 @@ while (flag == 1 && iter <= maxiter)
         subject to
             B*Z(:) == y;
             for kk = 1:N_known-1
+                error('We should not be doing known indexes now.')
                 Z(known_indexes(kk),:)*x_known(kk+1) == x_known(kk)*Z(known_indexes(kk+1),:);
             end
     cvx_end
 
-    if ~strcmp(cvx_status, 'Solved')
-        warning('cvx_status not equal to Solved.')
-        keyboard
+    if isempty(strfind(cvx_status, 'Solved'))
+        save(sprintf('failed_problem_sparse_bss_nuclear_v%s', datestr(now,'ddmmyyyyHHMMSS')))
+        error('cvx_status: %s.', cvx_status)
     end
 
     difference = norm(Z - Z_old,'fro')/norm(Z_old,'fro');
@@ -117,7 +118,7 @@ while (flag == 1 && iter <= maxiter)
     else
         if difference<1e-4
             % Converged
-            fprintf('Convergence reached\n')
+            fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
             flag = 0;
         else
             % Did not converge
