@@ -79,6 +79,10 @@ end
 Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
 
+[Uz1, Sz1, Vz1] = svd(Z1');
+h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
+x1FromZ1 = sqrt(Sz1(1,1))*Vz1(:,1);
+
 fprintf('\n\n')
 fprintf('norm(Z1est-Z1)=%d\n', norm(Z1est - Z1))
 fprintf('norm(Z2est-Z2)=%d\n', norm(Z2est - Z2))
