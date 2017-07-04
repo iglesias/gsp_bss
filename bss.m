@@ -84,6 +84,7 @@ h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
 x1FromZ1 = sqrt(Sz1(1,1))*Vz1(:,1);
 
 fprintf('\n\n')
+fprintf('Equality constraint test: %d\n', norm(y - V*A*(Z1est(:) + Z2est(:))))
 fprintf('norm(Z1est-Z1)=%d\n', norm(Z1est - Z1))
 fprintf('norm(Z2est-Z2)=%d\n', norm(Z2est - Z2))
 fprintf('norm([Z1+Z2]-[Z1est+Z2est])=%d\n', norm([Z1+Z2] - [Z1est+Z2est]))
