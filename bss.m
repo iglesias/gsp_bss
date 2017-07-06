@@ -74,7 +74,8 @@ else
   xSupportToEstimate = 1:N;
 end
 
-[Z1est, Z2est] = sparse_bss_nuclear(y, A, V, 1e-1, 0, knownSupportFlag);
+%[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, 1e-1, 0, knownSupportFlag);
+[Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, 1e-1, 0, knownSupportFlag);
 
 Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
