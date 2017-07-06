@@ -16,13 +16,6 @@ function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y,A,V,taux,tauh,varargin)
 %       
 %           Zi_hat = estimate of the rank-1 matrices xi*hi'
 
-% David Ramirez
-% Signal Processing group
-% University Carlos III of Madrid
-% 2016
-
-%% Disable Warnings
-
 warning ('off','MATLAB:nargchk:deprecated')
 
 %% Parameter definition
@@ -51,7 +44,7 @@ else
     known_indexes = varargin{4};
 end
 
-%% Blind estimation using rank minimization: nuclear norm surrogate
+%% Blind source separation using rank minimization: nuclear norm surrogate
 
 assert(size(A, 1) == length(y)) % this might change for sampled observations
 N = size(A, 1);
@@ -76,6 +69,7 @@ else
     Z_old = reshape(pinv(B)*y,N,L);
 end
 
+% Majorization-minimization
 while (flag == 1 && iter <= maxiter)
     fprintf('iteration %d\n', iter)
 
@@ -113,7 +107,6 @@ while (flag == 1 && iter <= maxiter)
     if ~isempty(strfind(cvx_status,'Infeasible'))
         % Stop the algorithm
         fprintf('Infeasible cvx\n')
-        Z = randn(N,L);
         flag = 0;
     else
         if difference<1e-4
