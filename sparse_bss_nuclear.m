@@ -1,15 +1,15 @@
-function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y,A,V,taux,tauh,varargin)
+function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, varargin)
 % SPARSE_BSS_NUCLEAR: Obtains the estimate of the filter and the elements 
 % of a graph signal using the nuclear norm surrogate, assuming a sparse model for the signal
 %
 %
-%           [Z1_hat, Z2_hat] = sparse_bss_nuclear(y,M,L,taux,tauh,x_known,known_indexes)
+%           [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, M, L, taux, tauh, verbose, x_known, known_indexes)
 %           y = filtered graph signal (might be a subset)
 %           A = Khatri-Rao product matrix
 %           V = rows of the inverse Graph Fourier transform which correspond to the observations
 %           taux = regularization parameter for x
 %           tauh = regularization parameter for h
-%           knownSupportFlag = whether the support of the input signals (assumed the same) is known
+%           known_support = whether the support of the input signals (assumed the same) is known
 %           S = cardinality of the input signals' support
 %           x_known = known values of the graph signal x. Could be an empty matrix or optional
 %           known_indexes = indexes of the known values. Could be an empty matrix or optional
@@ -26,16 +26,22 @@ maxiter = 50;
 
 %% Check input parameters
 
-if nargin<7
-    knownSupportFlag = 0;
+if nargin < 6
+    verbose = false;
+end
+
+if nargin < 7
+    known_support = 0;
     S = [];
 else 
     assert(nargin==7 || nargin==9)
-    knownSupportFlag = varargin{1};
-    S = varargin{2};
+    known_support = varargin{1};
+    if known_support
+        S = varargin{2};
+    end
 end
 
-if nargin<9
+if nargin < 9
     known_indexes = [];
     x_known = [];
 else
@@ -49,7 +55,7 @@ end
 assert(size(A, 1) == length(y)) % this might change for sampled observations
 N = size(A, 1);
 % It is assumed that the filters have the same order.
-if knownSupportFlag
+if known_support
     L = size(A, 2)/S;
 else
     L = size(A, 2)/N;
@@ -63,7 +69,7 @@ N_known = length(known_indexes);
 flag = 1;
 iter = 1;
 % LS solution for initializing w
-if knownSupportFlag
+if known_support
     Z_old = reshape(pinv(B)*y,S,L);
 else
     Z_old = reshape(pinv(B)*y,N,L);
@@ -71,14 +77,16 @@ end
 
 % Majorization-minimization
 while (flag == 1 && iter <= maxiter)
-    fprintf('iteration %d\n', iter)
+    if verbose
+        fprintf('iteration %d\n', iter)
+    end
 
     wx = 1./(sqrt(sum(abs(Z_old).^2,2)) + epsilon_normx);
     wx(known_indexes) = 0;
     wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
     
     cvx_begin quiet
-        if knownSupportFlag
+        if known_support
             variable Z1(S,L);
             variable Z2(S,L);
         else
@@ -98,24 +106,32 @@ while (flag == 1 && iter <= maxiter)
     cvx_end
 
     if isempty(strfind(cvx_status, 'Solved'))
-        save(sprintf('failed_problem_sparse_bss_nuclear_v%s', datestr(now,'ddmmyyyyHHMMSS')))
-        error('cvx_status: %s.', cvx_status)
+        fname = sprintf('failed_problem_sparse_bss_nuclear_v%s', ...
+                        datestr(now, 'ddmmyyyyHHMMSS'));
+        warning(sprintf('cvx_status not Solved, saving %s.', fname))
+        save(fname)
     end
 
     difference = norm(Z - Z_old,'fro')/norm(Z_old,'fro');
     
     if ~isempty(strfind(cvx_status,'Infeasible'))
         % Stop the algorithm
-        fprintf('Infeasible cvx\n')
+        if verbose
+            fprintf('Infeasible cvx\n')
+        end
         flag = 0;
     else
-        if difference<1e-4
+        if difference < 1e-4
             % Converged
-            fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
+            if verbose
+                fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
+            end
             flag = 0;
         else
             % Did not converge
-            fprintf('Covergence NOT reached, difference=%d.\n', difference)
+            if verbose
+                fprintf('Covergence NOT reached, difference=%d.\n', difference)
+            end
             Z_old = Z;
             iter = iter + 1;
         end
@@ -125,3 +141,5 @@ end
 
 Z1_hat = Z1;
 Z2_hat = Z2;
+
+end

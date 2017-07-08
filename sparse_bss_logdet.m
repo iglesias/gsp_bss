@@ -1,5 +1,9 @@
-function [Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, varargin)
+function [Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, verbose, varargin)
 % SPARSE_BSS_LOGDET: TODO DOC
+
+if nargin < 6
+    verbose = false;
+end
 
 %% Parameter definition.
 
@@ -28,7 +32,9 @@ Theta22_old = eye(L);
 
 % Majorization-minimization
 while (flag == 1 && iter <= max_iter)
-    fprintf('iteration %d\n', iter)
+    if verbose
+        fprintf('iteration %d\n', iter)
+    end
 
     wx = 1./(sqrt(sum(abs(Z_old).^2,2)) + epsilon_normx);
     wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
@@ -55,24 +61,32 @@ while (flag == 1 && iter <= max_iter)
     cvx_end
 
     if isempty(strfind(cvx_status, 'Solved'))
-        save(sprintf('failed_problem_sparse_bss_logdet_v%s', ...
-                     datestr(now, 'ddmmyyyyHHMMSS')))
+        fname = sprintf('failed_problem_sparse_bss_logdet_v%s', ...
+                        datestr(now, 'ddmmyyyyHHMMSS'));
+        warning(sprintf('cvx_status not Solved, saving %s.', fname))
+        save(fname)
     end
 
     difference = norm(Z - Z_old, 'fro')/norm(Z_old, 'fro');
 
     if ~isempty(strfind(cvx_status, 'Infeasible'))
         % Stop the algorithm.
-        fprintf('Infeasible cvx\n')
+        if verbose
+            fprintf('Infeasible cvx_status.\n')
+        end
         flag = 0;
     else
         if difference < 1e-4
             % Converged.
-            fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
+            if verbose
+                fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
+            end
             flag = 0;
         else
             % Did not converge.
-            fprintf('Convergence NOT reached, difference=%d.\n', difference)
+            if verbose
+                fprintf('Convergence NOT reached, difference=%d.\n', difference)
+            end
             Z_old = Z;
             iter = iter + 1;
         end
