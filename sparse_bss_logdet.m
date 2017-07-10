@@ -23,12 +23,12 @@ B = V*A;
 % Initialization
 flag = 1;
 iter = 1;
-% LS solution for initializating w
-Z_old = reshape(pinv(B)*y, N, L);
 Theta11_old = eye(N);
 Theta12_old = eye(L);
 Theta21_old = eye(N);
 Theta22_old = eye(L);
+% LS solution for initializating w
+Z_old = reshape(pinv(B)*y, N, L);
 
 % Majorization-minimization
 while (flag == 1 && iter <= max_iter)
@@ -36,8 +36,8 @@ while (flag == 1 && iter <= max_iter)
         fprintf('iteration %d\n', iter)
     end
 
-    wx = 1./(sqrt(sum(abs(Z_old).^2,2)) + epsilon_normx);
-    wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
+    wx = 1./(sqrt(sum(abs(Z_old).^2, 2)) + epsilon_normx);
+    wh = 1./(sqrt(sum(abs(Z_old).^2, 1)) + epsilon_normh);
 
     cvx_begin quiet
         variable Z1(N, L);
@@ -88,6 +88,10 @@ while (flag == 1 && iter <= max_iter)
                 fprintf('Convergence NOT reached, difference=%d.\n', difference)
             end
             Z_old = Z;
+            Theta11_old = Theta11;
+            Theta12_old = Theta12;
+            Theta21_old = Theta21;
+            Theta22_old = Theta22;
             iter = iter + 1;
         end
     end
