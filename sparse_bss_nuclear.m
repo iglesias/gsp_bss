@@ -73,6 +73,8 @@ if known_support
     Z_old = reshape(pinv(B)*y,S,L);
 else
     Z_old = reshape(pinv(B)*y,N,L);
+    Z1_old = Z_old/2;
+    Z2_old = Z_old/2;
 end
 
 % Majorization-minimization
@@ -83,7 +85,9 @@ while (flag == 1 && iter <= maxiter)
 
     wx = 1./(sqrt(sum(abs(Z_old).^2,2)) + epsilon_normx);
     wx(known_indexes) = 0;
-    wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
+    %wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
+    wh1 = 1./(sqrt(sum(abs(Z1_old).^2,1)) + epsilon_normh);
+    wh2 = 1./(sqrt(sum(abs(Z2_old).^2,1)) + epsilon_normh);
     
     cvx_begin quiet
         if known_support
@@ -95,7 +99,9 @@ while (flag == 1 && iter <= maxiter)
         end
 
         Z = Z1+Z2;
-        minimize( norm_nuc(Z1) + norm_nuc(Z2) + taux*wx'*norms(Z,2,2) + tauh*norms(Z,2,1)*wh' );
+        minimize( norm_nuc(Z1) + 0.1*norm_nuc(Z2) + taux*wx'*norms(Z,2,2) + ...
+                  0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
+%                  tauh*norms(Z,2,1)*wh' ); %...
         
         subject to
             B*Z(:) == y;
@@ -133,6 +139,8 @@ while (flag == 1 && iter <= maxiter)
                 fprintf('Covergence NOT reached, difference=%d.\n', difference)
             end
             Z_old = Z;
+            Z1_old = Z;
+            Z2_old = Z;
             iter = iter + 1;
         end
     end
