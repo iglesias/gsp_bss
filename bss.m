@@ -1,4 +1,8 @@
-function bss
+function bss(taux)
+
+if nargin < 1
+  taux = 1e-1;
+end
 
 % Number of nodes.
 N = 50;
@@ -25,8 +29,8 @@ lambda = diag(D);
 %[hLP, hHP] = gsp_design_filters(lambda, numFilterCoeffs, showFlag);
 
 numFilterCoeffs = 2;
-hLP = rand(2, 1);
-hHP = rand(2, 1);
+hLP = [1 0]';
+hHP = [0 1]';
 
 Psi = repmat(lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
 
@@ -74,18 +78,19 @@ else
   xSupportToEstimate = 1:N;
 end
 
-verbose = false;
-[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, 1e-1, 0, verbose, knownSupportFlag);
-%[Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, 1e-1, 0, verbose, knownSupportFlag);
+verbose = true;
+%[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, 1e-1, 0, verbose, knownSupportFlag);
+[Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, 0, verbose, knownSupportFlag);
+%[Z1_hat, Z2_hat] = sparse_bss_logdet_jointsum(y, A, V, 1e-1, 0, verbose, knownSupportFlag);
 
 Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
 
-save(sprintf('bss_nuclear_random_filters_%s', randomstring(20)))
+%save(sprintf('bss_logdet_jointsum_random_filters_%s', randomstring(20)))
 
-[Uz1, Sz1, Vz1] = svd(Z1');
-h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
-x1FromZ1 = sqrt(Sz1(1,1))*Vz1(:,1);
+%[Uz1, Sz1, Vz1] = svd(Z1');
+%h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
+%x1FromZ1 = sqrt(Sz1(1,1))*Vz1(:,1);
 
 fprintf('\n\n')
 fprintf('Equality constraint test: %d\n', norm(y - V*A*(Z1_hat(:) + Z2_hat(:))))

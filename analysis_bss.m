@@ -1,9 +1,10 @@
 function analysis_bss
 
-%fname_prefix = 'bss_random_filters_*';
+fname_prefix = 'bss_logdet_random_filters_*';
+fname_prefix = 'bss_logdet_jointsum_random_filters_*';
 %fname_prefix = 'bss_hLP01_hHP-10_filters_*';
 %fname_prefix = 'bss_hLP10_hHP01_filters_*';
-fname_prefix = 'bss_nuclear_hLP10_hHP01_filters_*';
+%fname_prefix = 'bss_nuclear_hLP10_hHP01_filters_*';
 
 files = dir(fname_prefix);
 eq_constraint_test = zeros(length(files), 1);
