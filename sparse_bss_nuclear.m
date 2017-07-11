@@ -101,7 +101,6 @@ while (flag == 1 && iter <= maxiter)
         Z = Z1+Z2;
         minimize( norm_nuc(Z1) + 0.1*norm_nuc(Z2) + taux*wx'*norms(Z,2,2) + ...
                   0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
-%                  tauh*norms(Z,2,1)*wh' ); %...
         
         subject to
             B*Z(:) == y;
