@@ -130,7 +130,8 @@ while (flag == 1 && iter <= maxiter)
         if difference < 1e-4
             % Converged
             if verbose
-                fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
+                fprintf('Convergence reached, difference=%d, cvx_status: %s.\n', ...
+                        difference, cvx_status)
             end
             flag = 0;
         else
