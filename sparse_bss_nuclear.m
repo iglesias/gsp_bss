@@ -1,4 +1,4 @@
-function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, varargin)
+function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, alpha, taux, tauh, verbose, varargin)
 % SPARSE_BSS_NUCLEAR: Obtains the estimate of the filter and the elements 
 % of a graph signal using the nuclear norm surrogate, assuming a sparse model for the signal
 %
@@ -7,6 +7,7 @@ function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, var
 %           y = filtered graph signal (might be a subset)
 %           A = Khatri-Rao product matrix
 %           V = rows of the inverse Graph Fourier transform which correspond to the observations
+%           alpha = regularization parameter for the nuclear norms
 %           taux = regularization parameter for x
 %           tauh = regularization parameter for h
 %           known_support = whether the support of the input signals (assumed the same) is known
@@ -26,26 +27,26 @@ maxiter = 50;
 
 %% Check input parameters
 
-if nargin < 6
+if nargin < 7
     verbose = false;
 end
 
-if nargin < 7
+if nargin < 8
     known_support = 0;
     S = [];
 else 
-    assert(nargin==7 || nargin==9)
+    assert(nargin==8 || nargin==10)
     known_support = varargin{1};
     if known_support
         S = varargin{2};
     end
 end
 
-if nargin < 9
+if nargin < 10
     known_indexes = [];
     x_known = [];
 else
-    assert(nargin==9)
+    assert(nargin==10)
     x_known = varargin{3};
     known_indexes = varargin{4};
 end
@@ -99,8 +100,8 @@ while (flag == 1 && iter <= maxiter)
         end
 
         Z = Z1+Z2;
-        minimize( norm_nuc(Z1) + 0.1*norm_nuc(Z2) + taux*wx'*norms(Z,2,2) + ...
-                  0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
+        minimize( alpha*norm_nuc(Z1) + (1-alpha)*norm_nuc(Z2) + taux*wx'*norms(Z, 2, 2) + ...
+                  tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
 %                  tauh*norms(Z,2,1)*wh' ); %...
         
         subject to
