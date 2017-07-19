@@ -1,7 +1,8 @@
-function data = analysis_single_alpha(alpha_arg)
+function data = analysis_helper(param_name, param_value)
 
-dir_prefix = 'data/alpha';
-fname_pattern = sprintf('%s/bss_nuclear_alpha=%.2f_10_01_*', dir_prefix, alpha_arg);
+dir_prefix = sprintf('data/%s', param_name);
+fname_pattern = sprintf('%s/bss_nuclear_%s=%.2f_10_01_*', ...
+                        dir_prefix, param_name, param_value);
 
 files = dir(fname_pattern);
 assert(length(files) == 100)
