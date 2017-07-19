@@ -94,7 +94,7 @@ sparse_bss_verbose = false;
 Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
 
-save(sprintf('data/epsilon/bss_nuclear_epsilon=%.2f_10_01_%s', epsilon, randomstring(20)))
+save(sprintf('data/epsilon/bss_nuclear_epsilon=%.0d_10_01_%s', epsilon, randomstring(20)))
 
 %[Uz1, Sz1, Vz1] = svd(Z1');
 %h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
