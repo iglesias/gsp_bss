@@ -13,6 +13,12 @@ data.Zi_norms = zeros(length(files), 2);
 data.Zi_hat_norms = zeros(length(files), 2);
 data.Zi_hat_diff = zeros(length(files), 1);
 
+%FIXME hardcoded number of columns / dimension of h.
+data.Z1_col_norms = zeros(length(files), 2);
+data.Z2_col_norms = zeros(length(files), 2);
+data.Z1_hat_col_norms = zeros(length(files), 2);
+data.Z2_hat_col_norms = zeros(length(files), 2);
+
 for i = 1:length(files)
   load(sprintf('%s/%s', dir_prefix, files(i).name), '-mat')
 
@@ -21,6 +27,11 @@ for i = 1:length(files)
   data.Zi_norms(i, :) = [norm(Z1, 'fro') norm(Z2, 'fro')];
   data.Zi_hat_norms(i, :) = [norm(Z1_hat, 'fro') norm(Z2_hat, 'fro')];
   data.Zi_hat_diff(i) = norm(Z1_hat-Z2_hat, 'fro');
+
+  data.Z1_col_norms(i, :) = norms(Z1, 2, 1);
+  data.Z2_col_norms(i, :) = norms(Z2, 2, 1);
+  data.Z1_hat_col_norms(i, :) = norms(Z1_hat, 2, 1);
+  data.Z2_hat_col_norms(i, :) = norms(Z2_hat, 2, 1);
 end
 
 end
