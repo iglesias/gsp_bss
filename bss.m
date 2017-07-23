@@ -101,24 +101,7 @@ save(sprintf('data/epsilon/bss_nuclear_epsilon=%.0d_10_01_%s', epsilon, randomst
 %x1FromZ1 = sqrt(Sz1(1,1))*Vz1(:,1);
 
 if verbose
-  fprintf('\n\n')
-  fprintf('Equality constraint test: %d\n', norm(y - V*A*(Z1_hat(:) + Z2_hat(:))))
-  fprintf('norm(Z1)=%d\n', norm(Z1))
-  fprintf('norm(Z2)=%d\n', norm(Z2))
-  fprintf('norm(Z1_hat)=%d\n', norm(Z1_hat))
-  fprintf('norm(Z2_hat)=%d\n', norm(Z2_hat))
-  fprintf('norm(Z1_hat-Z1)=%d\n', norm(Z1_hat - Z1))
-  fprintf('norm(Z2_hat-Z2)=%d\n', norm(Z2_hat - Z2))
-  fprintf('norm(Z1_hat-Z2)=%d\n', norm(Z1_hat - Z2))
-  fprintf('norm(Z2_hat-Z1)=%d\n', norm(Z2_hat - Z1))
-  fprintf('norm([Z1+Z2]-[Z1_hat+Z2_hat])=%d\n', norm([Z1+Z2] - [Z1_hat+Z2_hat]))
-  fprintf('norm(Z1-Z2)=%d\n', norm(Z1 - Z2))
-  fprintf('norm(Z1_hat-Z2_hat)=%d\n', norm(Z1_hat - Z2_hat))
-  fprintf('norm_nuc(Z1)+norm_nuc(Z2)=%d\n', norm_nuc(Z1)+norm_nuc(Z2))
-  fprintf('norm_nuc(Z1_hat)=%d\n', norm_nuc(Z1_hat))
-  fprintf('norm_nuc(Z2_hat)=%d\n', norm_nuc(Z2_hat))
-  fprintf('norm_nuc(Z1_hat)+norm_nuc(Z2_hat)=%d\n', norm_nuc(Z1_hat)+norm_nuc(Z2_hat))
-  fprintf('\n\n')
+  bss_print_summary
 
   cminmax = minmax([Z1(:); Z2(:); Z1_hat(:); Z2_hat(:)]);
 
