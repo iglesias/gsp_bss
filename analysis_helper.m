@@ -1,6 +1,7 @@
 function data = analysis_helper(param_name, param_value)
 
 dir_prefix = sprintf('data/%s', param_name);
+%fname_pattern = sprintf('%s/bss_nuclear_%s=%.2f_10_01_*', ...
 fname_pattern = sprintf('%s/bss_nuclear_%s=%.0d_10_01_*', ...
                         dir_prefix, param_name, param_value);
 
