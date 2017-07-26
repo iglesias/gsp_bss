@@ -1,4 +1,4 @@
-function bss(epsilon, taux, tauh, verbose)
+function bss(alpha, taux, tauh, verbose)
 
 if nargin < 2 
   taux = 1e-1;
@@ -87,14 +87,14 @@ else
 end
 
 sparse_bss_verbose = false;
-[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, epsilon, taux, tauh, sparse_bss_verbose, knownSupportFlag);
+[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, alpha, taux, tauh, sparse_bss_verbose, knownSupportFlag);
 %[Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, sparse_bss_verbose, knownSupportFlag);
 %[Z1_hat, Z2_hat] = sparse_bss_logdet_jointsum(y, A, V, 1e-1, 0, sparse_bss_verbose, knownSupportFlag);
 
 Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
 
-save(sprintf('data/epsilon/bss_nuclear_epsilon=%.0d_10_01_%s', epsilon, randomstring(20)))
+save(sprintf('data/alpha/bss_nuclear_alpha=%.2f_10_01_%s', alpha, randomstring(20)))
 
 %[Uz1, Sz1, Vz1] = svd(Z1');
 %h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
