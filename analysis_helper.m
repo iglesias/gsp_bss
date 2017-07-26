@@ -6,7 +6,9 @@ fname_pattern = sprintf('%s/bss_nuclear_%s=%.0d_10_01_*', ...
                         dir_prefix, param_name, param_value);
 
 files = dir(fname_pattern);
-assert(length(files) == 100)
+if length(files) ~= 100
+  error('Unexpected number of files (%d)', length(files))
+end
 
 data.eq_constraint_test = zeros(length(files), 1);
 data.Zsum_test = zeros(length(files), 1);
