@@ -1,4 +1,4 @@
-cminmax = minmax([Z1(:); Z2(:); Z1_hat(:); Z2_hat(:)]);
+cminmax = minmax([Z1(:); Z2(:); Z1_hat(:); Z2_hat(:)]');
 
 figure(1)
 clf
