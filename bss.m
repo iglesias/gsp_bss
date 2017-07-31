@@ -19,7 +19,7 @@ sparse_bss_verbose = false;
 %[Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, sparse_bss_verbose, knownSupportFlag);
 %[Z1_hat, Z2_hat] = sparse_bss_logdet_jointsum(y, A, V, 1e-1, 0, sparse_bss_verbose, knownSupportFlag);
 
-save(sprintf('data/tuneando/bss_nuclear_tuneando_10_01_%s', randomstring(20)))
+%fprintf('%.4d %.4d\n', norm(Z1_hat, 'fro'), norm(Z2_hat, 'fro'))
 
 %[Uz1, Sz1, Vz1] = svd(Z1');
 %h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
@@ -27,7 +27,7 @@ save(sprintf('data/tuneando/bss_nuclear_tuneando_10_01_%s', randomstring(20)))
 
 if verbose
   bss_print_summary
-  bss_plot_results
+%  bss_plot_results
 end
 
 end

@@ -3,12 +3,13 @@ function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, var
 % of a graph signal using the nuclear norm surrogate, assuming a sparse model for the signal
 %
 %
-%           [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, M, L, taux, tauh, verbose, x_known, known_indexes)
+%           [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, x_known, known_indexes)
 %           y = filtered graph signal (might be a subset)
 %           A = Khatri-Rao product matrix
 %           V = rows of the inverse Graph Fourier transform which correspond to the observations
 %           taux = regularization parameter for x
 %           tauh = regularization parameter for h
+%           verbose = set to true/false to switch on/off console output (default false)
 %           known_support = whether the support of the input signals (assumed the same) is known
 %           S = cardinality of the input signals' support
 %           x_known = known values of the graph signal x. Could be an empty matrix or optional
@@ -83,11 +84,17 @@ while (flag == 1 && iter <= maxiter)
         fprintf('iteration %d\n', iter)
     end
 
-    wx = 1./(sqrt(sum(abs(Z_old).^2,2)) + epsilon_normx);
-    wx(known_indexes) = 0;
-    %wh = 1./(sqrt(sum(abs(Z_old).^2,1)) + epsilon_normh);
-    wh1 = 1./(sqrt(sum(abs(Z1_old).^2,1)) + epsilon_normh);
-    wh2 = 1./(sqrt(sum(abs(Z2_old).^2,1)) + epsilon_normh);
+    %wx = 1./(sqrt(sum(abs(Z_old).^2, 2)) + epsilon_normx);
+    %wx(known_indexes) = 0;
+    wx1 = 1./(sqrt(sum(abs(Z1_old).^2, 2)) + epsilon_normx);
+    wx2 = 1./(sqrt(sum(abs(Z2_old).^2, 2)) + epsilon_normx);
+    assert(isempty(known_indexes))
+    %wh = 1./(sqrt(sum(abs(Z_old).^2, 1)) + epsilon_normh);
+    wh1 = 1./(sqrt(sum(abs(Z1_old).^2, 1)) + epsilon_normh);
+    wh2 = 1./(sqrt(sum(abs(Z2_old).^2, 1)) + epsilon_normh);
+
+%    fprintf('%d %d %d %d\n', norm_nuc(Z1_old), norm_nuc(Z2_old), ...
+%              wx1'*norms(Z1_old, 2, 2), wx2'*norms(Z2_old, 2, 2))
     
     cvx_begin quiet
         if known_support
@@ -99,8 +106,9 @@ while (flag == 1 && iter <= maxiter)
         end
 
         Z = Z1+Z2;
-        minimize( norm_nuc(Z1) + 0.1*norm_nuc(Z2) + taux*wx'*norms(Z,2,2) + ...
-                  0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
+        minimize( 5*norm_nuc(Z1) + norm_nuc(Z2) + ...
+                  wx1'*norms(Z1, 2, 2) + 1.27*wx2'*norms(Z2, 2, 2) );
+%                  0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
         
         subject to
             B*Z(:) == y;
