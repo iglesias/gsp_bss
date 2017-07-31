@@ -139,8 +139,8 @@ while (flag == 1 && iter <= maxiter)
                 fprintf('Covergence NOT reached, difference=%d.\n', difference)
             end
             Z_old = Z;
-            Z1_old = Z;
-            Z2_old = Z;
+            Z1_old = Z1;
+            Z2_old = Z2;
             iter = iter + 1;
         end
     end
