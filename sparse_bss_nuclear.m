@@ -90,8 +90,8 @@ while (flag == 1 && iter <= maxiter)
     wx2 = 1./(sqrt(sum(abs(Z2_old).^2, 2)) + epsilon_normx);
     assert(isempty(known_indexes))
     %wh = 1./(sqrt(sum(abs(Z_old).^2, 1)) + epsilon_normh);
-    wh1 = 1./(sqrt(sum(abs(Z1_old).^2, 1)) + epsilon_normh);
-    wh2 = 1./(sqrt(sum(abs(Z2_old).^2, 1)) + epsilon_normh);
+%    wh1 = 1./(sqrt(sum(abs(Z1_old).^2, 1)) + epsilon_normh);
+%    wh2 = 1./(sqrt(sum(abs(Z2_old).^2, 1)) + epsilon_normh);
 
 %    fprintf('%d %d %d %d\n', norm_nuc(Z1_old), norm_nuc(Z2_old), ...
 %              wx1'*norms(Z1_old, 2, 2), wx2'*norms(Z2_old, 2, 2))
@@ -107,7 +107,7 @@ while (flag == 1 && iter <= maxiter)
 
         Z = Z1+Z2;
         minimize( 5*norm_nuc(Z1) + norm_nuc(Z2) + ...
-                  wx1'*norms(Z1, 2, 2) + 1.27*wx2'*norms(Z2, 2, 2) );
+                  wx1'*norms(Z1, 2, 2) + 1.325*wx2'*norms(Z2, 2, 2) );
 %                  0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
         
         subject to
