@@ -19,20 +19,20 @@ U = inv(V);
 lambda = diag(D);
 
 numFilterCoeffs = 2;
-hLP = rand(2, 1);
-hHP = rand(2, 1);
+h1 = rand(2, 1);
+h2 = rand(2, 1);
 
 Psi = repmat(lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
 
 % Build filter matrices.
-H1 = hLP(1)*eye(N);
+H1 = h1(1)*eye(N);
 for l = 1:numFilterCoeffs-1
-  H1 = H1 + hLP(l+1)*G.L^l;
+  H1 = H1 + h1(l+1)*G.L^l;
 end
 
-H2 = hHP(1)*eye(N);
+H2 = h2(1)*eye(N);
 for l = 1:numFilterCoeffs-1
-  H2 = H2 + hHP(l+1)*G.L^l;
+  H2 = H2 + h2(l+1)*G.L^l;
 end
 
 H = [H1 H2];
@@ -70,5 +70,5 @@ else
   xSupportToEstimate = 1:N;
 end
 
-Z1 = x1(xSupportToEstimate)*hLP';
-Z2 = x2(xSupportToEstimate)*hHP';
+Z1 = x1(xSupportToEstimate)*h1';
+Z2 = x2(xSupportToEstimate)*h2';
