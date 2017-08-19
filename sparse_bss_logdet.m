@@ -1,4 +1,4 @@
-function [Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, verbose, varargin)
+function [Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, verbose)
 % SPARSE_BSS_LOGDET: TODO DOC
 
 if nargin < 6
@@ -29,6 +29,8 @@ Theta21_old = eye(N);
 Theta22_old = eye(L);
 % LS solution for initializating w
 Z_old = reshape(pinv(B)*y, N, L);
+Z1_old = Z_old/2;
+Z2_old = Z_old/2;
 
 % Majorization-minimization
 while (flag == 1 && iter <= max_iter)
@@ -36,8 +38,8 @@ while (flag == 1 && iter <= max_iter)
         fprintf('iteration %d\n', iter)
     end
 
-    wx = 1./(sqrt(sum(abs(Z_old).^2, 2)) + epsilon_normx);
-    wh = 1./(sqrt(sum(abs(Z_old).^2, 1)) + epsilon_normh);
+    wx1 = 1./(sqrt(sum(abs(Z1_old).^2, 2)) + epsilon_normx);
+    wx2 = 1./(sqrt(sum(abs(Z2_old).^2, 2)) + epsilon_normx);
 
     cvx_begin quiet
         variable Z1(N, L);
@@ -48,12 +50,13 @@ while (flag == 1 && iter <= max_iter)
         variable Theta22(L, L) symmetric;
 
         Z = Z1+Z2;
-        minimize(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
-                 trace((Theta12_old + epsilon_rank*eye(L))\Theta12) + ...
-                 trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
-                 trace((Theta22_old + epsilon_rank*eye(L))\Theta22) + ...
-                 taux*wx'*norms(Z,2,2) + ...
-                 tauh*norms(Z,2,1)*wh');
+        pho_Z1 = 5;
+        tau_Z2 = 1.3;
+        minimize( pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
+                 trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
+                 (trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
+                 trace((Theta22_old + epsilon_rank*eye(L))\Theta22)) + ...
+                 wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
 
         subject to
             [Theta11 Z1; Z1' Theta12] == semidefinite(N+L);
@@ -66,6 +69,9 @@ while (flag == 1 && iter <= max_iter)
                         datestr(now, 'ddmmyyyyHHMMSS'));
         warning(sprintf('cvx_status not Solved, saving %s.', fname))
         save(fname)
+        Z1_hat = nan(size(Z1));
+        Z2_hat = nan(size(Z2));
+        return
     end
 
     difference = norm(Z - Z_old, 'fro')/norm(Z_old, 'fro');
@@ -75,7 +81,9 @@ while (flag == 1 && iter <= max_iter)
         if verbose
             fprintf('Infeasible cvx_status.\n')
         end
-        flag = 0;
+        Z1_hat = nan(size(Z1));
+        Z2_hat = nan(size(Z2));
+        return
     else
         if difference < 1e-4
             % Converged.
