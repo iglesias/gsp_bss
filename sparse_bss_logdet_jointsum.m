@@ -54,7 +54,7 @@ while (flag == 1 && iter <= max_iter)
     cvx_end
 
     if isempty(strfind(cvx_status, 'Solved'))
-        fname = sprintf('failed_problem_sparse_bss_logdet_v%s', ...
+        fname = sprintf('failed_problem_sparse_bss_logdet_jointsum_v%s', ...
                         datestr(now, 'ddmmyyyyHHMMSS'));
         warning(sprintf('cvx_status not Solved, saving %s.', fname))
         save(fname)
