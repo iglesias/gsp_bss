@@ -71,9 +71,9 @@ flag = 1;
 iter = 1;
 % LS solution for initializing w
 if known_support
-    Z_old = reshape(pinv(B)*y,S,L);
+    Z_old = reshape(pinv(B)*y, S, L);
 else
-    Z_old = reshape(pinv(B)*y,N,L);
+    Z_old = reshape(pinv(B)*y, N, L);
     Z1_old = Z_old/2;
     Z2_old = Z_old/2;
 end
@@ -84,31 +84,24 @@ while (flag == 1 && iter <= maxiter)
         fprintf('iteration %d\n', iter)
     end
 
-    %wx = 1./(sqrt(sum(abs(Z_old).^2, 2)) + epsilon_normx);
-    %wx(known_indexes) = 0;
     wx1 = 1./(sqrt(sum(abs(Z1_old).^2, 2)) + epsilon_normx);
     wx2 = 1./(sqrt(sum(abs(Z2_old).^2, 2)) + epsilon_normx);
     assert(isempty(known_indexes))
-    %wh = 1./(sqrt(sum(abs(Z_old).^2, 1)) + epsilon_normh);
-%    wh1 = 1./(sqrt(sum(abs(Z1_old).^2, 1)) + epsilon_normh);
-%    wh2 = 1./(sqrt(sum(abs(Z2_old).^2, 1)) + epsilon_normh);
 
-%    fprintf('%d %d %d %d\n', norm_nuc(Z1_old), norm_nuc(Z2_old), ...
-%              wx1'*norms(Z1_old, 2, 2), wx2'*norms(Z2_old, 2, 2))
-    
     cvx_begin quiet
         if known_support
-            variable Z1(S,L);
-            variable Z2(S,L);
+            variable Z1(S, L);
+            variable Z2(S, L);
         else
-            variable Z1(N,L);
-            variable Z2(N,L);
+            variable Z1(N, L);
+            variable Z2(N, L);
         end
 
         Z = Z1+Z2;
-        minimize( 5*norm_nuc(Z1) + norm_nuc(Z2) + ...
-                  wx1'*norms(Z1, 2, 2) + 1.325*wx2'*norms(Z2, 2, 2) );
-%                  0.1*tauh*norms(Z1, 2, 1)*wh1' + tauh*norms(Z2, 2, 1)*wh2');
+        pho_Z1 = 5;
+        tau_Z2 = 1.3;
+        minimize( pho_Z1*norm_nuc(Z1) + norm_nuc(Z2) + ...
+                  wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
         
         subject to
             B*Z(:) == y;
@@ -118,21 +111,30 @@ while (flag == 1 && iter <= maxiter)
             end
     cvx_end
 
+%    fprintf('%d %d %d %d\n', pho_Z1*norm_nuc(Z1), norm_nuc(Z2), ...
+%                             wx1'*norms(Z1, 2, 2), ...
+%                             tau_Z2*wx2'*norms(Z2, 2, 2))
+
     if isempty(strfind(cvx_status, 'Solved'))
         fname = sprintf('failed_problem_sparse_bss_nuclear_v%s', ...
                         datestr(now, 'ddmmyyyyHHMMSS'));
         warning(sprintf('cvx_status not Solved, saving %s.', fname))
         save(fname)
+        Z1_hat = nan(size(Z1));
+        Z2_hat = nan(size(Z2));
+        return
     end
 
     difference = norm(Z - Z_old,'fro')/norm(Z_old,'fro');
     
-    if ~isempty(strfind(cvx_status,'Infeasible'))
+    if ~isempty(strfind(cvx_status, 'Infeasible'))
         % Stop the algorithm
         if verbose
             fprintf('Infeasible cvx\n')
         end
-        flag = 0;
+        Z1_hat = nan(size(Z1));
+        Z2_hat = nan(size(Z2));
+        return
     else
         if difference < 1e-4
             % Converged
