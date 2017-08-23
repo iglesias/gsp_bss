@@ -1,0 +1,8 @@
+fprintf('\n\n')
+fprintf('Equality constraint test: %d\n', norm(y - (G(1).V*A1*Z1_hat(:) + G(2).V*A2*Z2_hat(:))))
+fprintf('norm(Z1_hat-Z1)=%d\n', norm(Z1_hat - Z1))
+fprintf('norm(Z2_hat-Z2)=%d\n', norm(Z2_hat - Z2))
+fprintf('rank(Z1)=%d rank(Z2)=%d\n', rank(Z1), rank(Z2))
+fprintf('svd(Z1_hat)=(%d, %d)\n', svd(Z1_hat))
+fprintf('svd(Z2_hat)=(%d, %d)\n', svd(Z2_hat))
+fprintf('\n\n')
