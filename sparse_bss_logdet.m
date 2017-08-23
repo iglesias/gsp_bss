@@ -54,7 +54,7 @@ while (flag == 1 && iter <= max_iter)
         tau_Z2 = 1.3;
         minimize( pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
                  trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
-                 (trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
+                  (trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
                  trace((Theta22_old + epsilon_rank*eye(L))\Theta22)) + ...
                  wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
 
@@ -97,6 +97,8 @@ while (flag == 1 && iter <= max_iter)
                 fprintf('Convergence NOT reached, difference=%d.\n', difference)
             end
             Z_old = Z;
+            Z1_old = Z1;
+            Z2_old = Z2;
             Theta11_old = Theta11;
             Theta12_old = Theta12;
             Theta21_old = Theta21;
