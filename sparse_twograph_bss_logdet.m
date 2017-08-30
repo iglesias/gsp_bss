@@ -1,7 +1,7 @@
 function [Z1_hat, Z2_hat] = sparse_twograph_bss_logdet(y, A1, V1, A2, V2, verbose)
 
 if ~exist('verbose', 'var')
-  verbose = false;
+    verbose = false;
 end
 
 %% Parameter definition.
@@ -16,8 +16,6 @@ assert(size(A1, 1) == length(y))
 N = size(A1, 1);
 % It is assumed that the filters have the same order.
 L = size(A1, 2)/N;
-B1 = V1*A1;
-B2 = V2*A2;
 
 % Initialization
 flag = 1;
@@ -79,14 +77,6 @@ while (flag == 1 && iter <= max_iter)
                 trace((Theta22_old + epsilon_rank*eye(L))\Theta22));
     b = wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2);
     fprintf('%d %d\n', a, b)
-
-    if min(svd(Z1)) > 1e-9 && pho_Z1 < 10
-      pho_Z1 = 2*pho_Z1
-    end
-
-    if min(svd(Z2)) > 1e-9 && pho_Z2 < 10
-      pho_Z2 = 2*pho_Z2
-    end
 
     if isempty(strfind(cvx_status, 'Solved'))
         fname = sprintf('failed_problem_sparse_twograph_bss_logdet_v%s', ...

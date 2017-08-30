@@ -36,8 +36,6 @@ end
 
 H = [H1 H2];
 
-I = eye(N);
-
 % Input.
 % Number of non-zero input nodes.
 S = 5;
