@@ -1,4 +1,4 @@
-function [Z1_hat, Z2_hat] = sparse_twograph_bss_logdet(y, A1, V1, A2, V2, verbose)
+function [Z1_hat, Z2_hat] = twograph_bss_logdet(y, A1, V1, A2, V2, verbose)
 
 if ~exist('verbose', 'var')
     verbose = false;
@@ -83,7 +83,7 @@ while (flag == 1 && iter <= max_iter)
     end
 
     if isempty(strfind(cvx_status, 'Solved'))
-        fname = sprintf('failed_problem_sparse_twograph_bss_logdet_v%s', ...
+        fname = sprintf('failed_problem_twograph_bss_logdet_v%s', ...
                         datestr(now, 'ddmmyyyyHHMMSS'));
         warning(sprintf('cvx_status not Solved, saving %s.', fname))
         save(fname)
