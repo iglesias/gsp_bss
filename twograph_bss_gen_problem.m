@@ -1,5 +1,6 @@
 function [truth, model, y] = twograph_bss_gen_problem
 
+
 numGraphs = 2;
 % Number of nodes.
 N = 50;
@@ -15,8 +16,19 @@ for i = 1:numGraphs
 end
 
 numFilterCoeffs = 2;
-truth.h1 = rand(2, 1);
-truth.h2 = rand(2, 1);
+data_distibution = DataDistribution.Normal;
+
+switch data_distibution
+case DataDistribution.Normal
+  truth.h1 = randn(2, 1);
+  truth.h2 = randn(2, 1);
+
+  truth.h1 = truth.h1/norm(truth.h1);
+  truth.h2 = truth.h2/norm(truth.h2);
+case DataDistribution.Uniform
+  truth.h1 = rand(2, 1);
+  truth.h2 = rand(2, 1);
+end
 
 for i = 1:numGraphs
   Psi{i} = repmat(model.G(i).lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
@@ -49,10 +61,21 @@ else
 end
 
 truth.x1 = zeros(N, 1);
-truth.x1(truth.x1Support) = rand(S, 1);
-
 truth.x2 = zeros(N, 1);
-truth.x2(truth.x2Support) = rand(S, 1);
+
+switch data_distibution
+case DataDistribution.Normal
+  truth.x1(truth.x1Support) = randn(S, 1);
+  truth.x2(truth.x2Support) = randn(S, 1);
+
+  truth.x1 = truth.x1/norm(truth.x1);
+  truth.x2 = truth.x2/norm(truth.x2);
+
+case DataDistribution.Uniform
+  truth.x1(truth.x1Support) = rand(S, 1);
+  truth.x2(truth.x2Support) = rand(S, 1);
+end
+
 
 x = [truth.x1; truth.x2];
 y = H*x;
