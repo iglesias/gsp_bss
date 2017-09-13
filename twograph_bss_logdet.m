@@ -26,20 +26,7 @@ Theta21_old = eye(N);
 Theta22_old = eye(L);
 
 % Find initial values for Z1 and Z2.
-cvx_begin quiet
-    variable Z1(N, L);
-    variable Z2(N, L);
-
-    tau = 0.1;
-    minimize(norm_nuc(Z1) + norm_nuc(Z2) + tau*(sum(norms(Z1, 2, 2)) + sum(norms(Z2, 2, 2))));
-
-    subject to
-        y == V1*A1*vec(Z1) + V2*A2*vec(Z2);
-cvx_end
-
-fprintf('%d %d\n', norm_nuc(Z1)+norm_nuc(Z2), tau*(sum(norms(Z1, 2, 2)) + sum(norms(Z2, 2, 2))))
-Z1_old = Z1;
-Z2_old = Z2;
+[Z1_old, Z2_old] = twograph_bss_nuclear_direct(y, A1, V1, A2, V2, verbose);
 
 % Majorization-minimization
 while (flag == 1 && iter <= max_iter)
@@ -58,13 +45,14 @@ while (flag == 1 && iter <= max_iter)
         variable Theta21(N, N) symmetric;
         variable Theta22(L, L) symmetric;
 
-        pho_Z1 = 3;
-        pho_Z2 = 3;
+        pho_Z1 = 1;
+        pho_Z2 = 1;
+        tau = 0.25;
         minimize(pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
                  trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
                  pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
                  trace((Theta22_old + epsilon_rank*eye(L))\Theta22)) + ...
-                 wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2));
+                 tau*(wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2)));
 
         subject to
             [Theta11 Z1; Z1' Theta12] == semidefinite(N+L);
@@ -76,7 +64,7 @@ while (flag == 1 && iter <= max_iter)
                 trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
         pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
                 trace((Theta22_old + epsilon_rank*eye(L))\Theta22));
-    b = wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2);
+    b = tau*(wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2));
 
     if verbose
         fprintf('%d %d\n', a, b)

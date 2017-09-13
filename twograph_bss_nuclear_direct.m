@@ -15,7 +15,7 @@ cvx_begin quiet
     variable Z2(N, L);
 
     pho = 1;
-    tau = 1;
+    tau = 0.5;
     minimize(pho*(norm_nuc(Z1) + norm_nuc(Z2)) + tau*(sum(norms(Z1, 1, 2)) + sum(norms(Z2, 1, 2))));
 
     subject to
