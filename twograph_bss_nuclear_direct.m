@@ -23,7 +23,13 @@ cvx_begin quiet
 cvx_end
 
 if verbose
-    fprintf('%d %d\n', pho*(norm_nuc(Z1) + norm_nuc(Z2)), tau*(sum(norms(Z1, 1, 2)) + sum(norms(Z2, 1, 2))))
+    assert(all(size(Z1) == size(Z2)))
+    svd_fmt_str = prepare_svd_fmt_str(size(Z1, 2));
+
+    fprintf('%d %d\n', pho*(norm_nuc(Z1) + norm_nuc(Z2)), ...
+                       tau*(sum(norms(Z1, 1, 2)) + sum(norms(Z2, 1, 2))))
+    fprintf(sprintf('svd(Z1)=(%s)\n', svd_fmt_str), svd(Z1))
+    fprintf(sprintf('svd(Z2)=(%s)\n', svd_fmt_str), svd(Z2))
 end
 
 Z1_hat = Z1;

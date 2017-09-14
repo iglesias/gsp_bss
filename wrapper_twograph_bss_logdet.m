@@ -9,7 +9,7 @@ do_plot = false;
                                        model.G(2).V, ...
                                        verbose_twograph_bss_logdet);
 if verbose_self
-  twograph_bss_print_summary(Z1_hat, Z2_hat, truth, model, y)
+  twograph_bss_print_summary(Z1_hat, Z2_hat, truth, model, y);
 end
 
 if do_plot

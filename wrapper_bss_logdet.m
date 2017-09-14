@@ -1,6 +1,6 @@
 function wrapper_bss_logdet
 
-verbose_bss_logdet = true;
+verbose_bss_logdet = false;
 verbose_self = true;
 do_plot = false;
 

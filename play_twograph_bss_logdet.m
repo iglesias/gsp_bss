@@ -1,4 +1,4 @@
-N = 50;
+N = 100;
 success = zeros(N, 1);
 verbose_twograph_bss_logdet = false;
 

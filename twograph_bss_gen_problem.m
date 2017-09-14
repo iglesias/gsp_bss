@@ -18,19 +18,19 @@ for i = 1:numGraphs
   model.G(i).lambda = diag(model.G(i).D);
 end
 
-numFilterCoeffs = 2;
-data_distibution = DataDistribution.Normal;
+numFilterCoeffs = 3;
+data_distibution = DataDistribution.Uniform;
 
 switch data_distibution
 case DataDistribution.Normal
-  truth.h1 = randn(2, 1);
-  truth.h2 = randn(2, 1);
+  truth.h1 = randn(numFilterCoeffs, 1);
+  truth.h2 = randn(numFilterCoeffs, 1);
 
   truth.h1 = truth.h1/norm(truth.h1);
   truth.h2 = truth.h2/norm(truth.h2);
 case DataDistribution.Uniform
-  truth.h1 = rand(2, 1);
-  truth.h2 = rand(2, 1);
+  truth.h1 = rand(numFilterCoeffs, 1);
+  truth.h2 = rand(numFilterCoeffs, 1);
 end
 
 for i = 1:numGraphs
@@ -52,7 +52,7 @@ H = [H1 H2];
 
 % Input.
 % Number of non-zero input nodes.
-S = 5;
+S = 1;
 
 truth.x1Support = randperm(N, S);
 truth.x2Support = randperm(N, S);

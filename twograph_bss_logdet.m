@@ -45,9 +45,9 @@ while (flag == 1 && iter <= max_iter)
         variable Theta21(N, N) symmetric;
         variable Theta22(L, L) symmetric;
 
-        pho_Z1 = 1;
-        pho_Z2 = 1;
-        tau = 0.25;
+        pho_Z1 = 2;
+        pho_Z2 = 2;
+        tau = 0.1;
         minimize(pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
                  trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
                  pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
@@ -61,11 +61,11 @@ while (flag == 1 && iter <= max_iter)
     cvx_end
 
     if verbose
-      a = pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
-                  trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
-          pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
-                  trace((Theta22_old + epsilon_rank*eye(L))\Theta22));
-      b = tau*(wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2));
+        a = pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
+                    trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
+            pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
+                    trace((Theta22_old + epsilon_rank*eye(L))\Theta22));
+        b = tau*(wx1'*norms(Z1, 2, 2) + wx2'*norms(Z2, 2, 2));
 
         fprintf('%d %d\n', a, b)
     end
