@@ -1,5 +1,5 @@
-function [Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, verbose)
-% SPARSE_BSS_LOGDET: TODO DOC
+function [Z1_hat, Z2_hat] = bss_logdet_jointsum(y, A, V, taux, tauh, verbose, varargin)
+% BSS_LOGDET_JOINTSUM: TODO DOC
 
 if nargin < 6
     verbose = false;
@@ -23,14 +23,10 @@ B = V*A;
 % Initialization
 flag = 1;
 iter = 1;
-Theta11_old = eye(N);
-Theta12_old = eye(L);
-Theta21_old = eye(N);
-Theta22_old = eye(L);
+Theta1_old = eye(N);
+Theta2_old = eye(L);
 % LS solution for initializating w
 Z_old = reshape(pinv(B)*y, N, L);
-Z1_old = Z_old/2;
-Z2_old = Z_old/2;
 
 % Majorization-minimization
 while (flag == 1 && iter <= max_iter)
@@ -38,40 +34,30 @@ while (flag == 1 && iter <= max_iter)
         fprintf('iteration %d\n', iter)
     end
 
-    wx1 = 1./(sqrt(sum(abs(Z1_old).^2, 2)) + epsilon_normx);
-    wx2 = 1./(sqrt(sum(abs(Z2_old).^2, 2)) + epsilon_normx);
+    wx = 1./(sqrt(sum(abs(Z_old).^2, 2)) + epsilon_normx);
+    wh = 1./(sqrt(sum(abs(Z_old).^2, 1)) + epsilon_normh);
 
     cvx_begin quiet
         variable Z1(N, L);
         variable Z2(N, L);
-        variable Theta11(N, N) symmetric;
-        variable Theta12(L, L) symmetric;
-        variable Theta21(N, N) symmetric;
-        variable Theta22(L, L) symmetric;
+        variable Theta1(N, N) symmetric;
+        variable Theta2(L, L) symmetric;
 
         Z = Z1+Z2;
-        pho_Z1 = 5;
-        tau_Z2 = 1.3;
-        minimize( pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
-                 trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
-                  (trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
-                 trace((Theta22_old + epsilon_rank*eye(L))\Theta22)) + ...
-                 wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
+        minimize(trace((Theta1_old + epsilon_rank*eye(N))\Theta1) + ...
+                 trace((Theta2_old + epsilon_rank*eye(L))\Theta2) + ...
+                 taux*wx'*norms(Z,2,2) + tauh*norms(Z,2,1)*wh');
 
         subject to
-            [Theta11 Z1; Z1' Theta12] == semidefinite(N+L);
-            [Theta21 Z2; Z2' Theta22] == semidefinite(N+L);
+            [Theta1 Z; Z' Theta2] == semidefinite(N+L);
             B*Z(:) == y;
     cvx_end
 
     if isempty(strfind(cvx_status, 'Solved'))
-        fname = sprintf('failed_problem_sparse_bss_logdet_v%s', ...
+        fname = sprintf('failed_problem_bss_logdet_jointsum_v%s', ...
                         datestr(now, 'ddmmyyyyHHMMSS'));
         warning(sprintf('cvx_status not Solved, saving %s.', fname))
         save(fname)
-        Z1_hat = nan(size(Z1));
-        Z2_hat = nan(size(Z2));
-        return
     end
 
     difference = norm(Z - Z_old, 'fro')/norm(Z_old, 'fro');
@@ -81,9 +67,7 @@ while (flag == 1 && iter <= max_iter)
         if verbose
             fprintf('Infeasible cvx_status.\n')
         end
-        Z1_hat = nan(size(Z1));
-        Z2_hat = nan(size(Z2));
-        return
+        flag = 0;
     else
         if difference < 1e-4
             % Converged.
@@ -96,13 +80,9 @@ while (flag == 1 && iter <= max_iter)
             if verbose
                 fprintf('Convergence NOT reached, difference=%d.\n', difference)
             end
+            Theta1_old = Theta1;
+            Theta2_old = Theta2;
             Z_old = Z;
-            Z1_old = Z1;
-            Z2_old = Z2;
-            Theta11_old = Theta11;
-            Theta12_old = Theta12;
-            Theta21_old = Theta21;
-            Theta22_old = Theta22;
             iter = iter + 1;
         end
     end
