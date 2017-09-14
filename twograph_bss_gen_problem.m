@@ -1,6 +1,5 @@
 function [truth, model, y] = twograph_bss_gen_problem
 
-
 numGraphs = 2;
 % Number of nodes.
 N = 50;
@@ -10,6 +9,10 @@ p = 0.1;
 for i = 1:numGraphs
   model.G(i).W = generate_connected_ER(N, p);
   model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
+
+  assert(issymmetric(model.G(i).W))
+  assert(issymmetric(model.G(i).L))
+
   [model.G(i).V, model.G(i).D] = eig(model.G(i).L);
   model.G(i).U = inv(model.G(i).V);
   model.G(i).lambda = diag(model.G(i).D);
