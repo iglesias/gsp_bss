@@ -1,7 +1,6 @@
-function [Z1_hat, Z2_hat] = bss_logdet(y, A, V, taux, tauh, verbose)
-% BSS_LOGDET: TODO DOC
+function [Z1_hat, Z2_hat] = bss_logdet(y, A, V, verbose)
 
-if nargin < 6
+if ~exist('verbose', 'var')
     verbose = false;
 end
 
@@ -51,18 +50,31 @@ while (flag == 1 && iter <= max_iter)
 
         Z = Z1+Z2;
         pho_Z1 = 5;
+        pho_Z2 = 0.5;
+        tau_Z1 = 0.5;
         tau_Z2 = 1.3;
         minimize( pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
                  trace((Theta12_old + epsilon_rank*eye(L))\Theta12)) + ...
-                  (trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
+                  pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
                  trace((Theta22_old + epsilon_rank*eye(L))\Theta22)) + ...
-                 wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
+                 tau_Z1*wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
 
         subject to
             [Theta11 Z1; Z1' Theta12] == semidefinite(N+L);
             [Theta21 Z2; Z2' Theta22] == semidefinite(N+L);
             B*Z(:) == y;
     cvx_end
+
+    if verbose
+        a = pho_Z1*(trace((Theta11_old + epsilon_rank*eye(N))\Theta11) + ...
+                 trace((Theta12_old + epsilon_rank*eye(L))\Theta12));
+        b = pho_Z2*(trace((Theta21_old + epsilon_rank*eye(N))\Theta21) + ...
+                 trace((Theta22_old + epsilon_rank*eye(L))\Theta22));
+        c = tau_Z1*wx1'*norms(Z1, 2, 2);
+        d = tau_Z2*wx2'*norms(Z2, 2, 2);
+
+        fprintf('%d %d %d %d\n', a, b, c, d)
+    end
 
     if isempty(strfind(cvx_status, 'Solved'))
         fname = sprintf('failed_problem_bss_logdet_v%s', ...
