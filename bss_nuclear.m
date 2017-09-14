@@ -1,23 +1,14 @@
-function [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, varargin)
-% SPARSE_BSS_NUCLEAR: Obtains the estimate of the filter and the elements 
+function [Z1_hat, Z2_hat] = bss_nuclear(y, A, V, verbose)
+% BSS_NUCLEAR: Obtains the estimate of the filter and the elements
 % of a graph signal using the nuclear norm surrogate, assuming a sparse model for the signal
 %
-%
-%           [Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, taux, tauh, verbose, x_known, known_indexes)
+%           [Z1_hat, Z2_hat] = bss_nuclear(y, A, V, verbose)
 %           y = filtered graph signal (might be a subset)
 %           A = Khatri-Rao product matrix
 %           V = rows of the inverse Graph Fourier transform which correspond to the observations
-%           taux = regularization parameter for x
-%           tauh = regularization parameter for h
 %           verbose = set to true/false to switch on/off console output (default false)
-%           known_support = whether the support of the input signals (assumed the same) is known
-%           S = cardinality of the input signals' support
-%           x_known = known values of the graph signal x. Could be an empty matrix or optional
-%           known_indexes = indexes of the known values. Could be an empty matrix or optional
-%       
+%
 %           Zi_hat = estimate of the rank-1 matrices xi*hi'
-
-warning ('off','MATLAB:nargchk:deprecated')
 
 %% Parameter definition
 
@@ -27,28 +18,8 @@ maxiter = 50;
 
 %% Check input parameters
 
-if nargin < 6
+if ~exist('verbose', 'var')
     verbose = false;
-end
-
-if nargin < 7
-    known_support = 0;
-    S = [];
-else 
-    assert(nargin==7 || nargin==9)
-    known_support = varargin{1};
-    if known_support
-        S = varargin{2};
-    end
-end
-
-if nargin < 9
-    known_indexes = [];
-    x_known = [];
-else
-    assert(nargin==9)
-    x_known = varargin{3};
-    known_indexes = varargin{4};
 end
 
 %% Blind source separation using rank minimization: nuclear norm surrogate
@@ -56,27 +27,16 @@ end
 assert(size(A, 1) == length(y)) % this might change for sampled observations
 N = size(A, 1);
 % It is assumed that the filters have the same order.
-if known_support
-    L = size(A, 2)/S;
-else
-    L = size(A, 2)/N;
-end
+L = size(A, 2)/N;
 B = V*A;
-
-% Length of the known signal values
-N_known = length(known_indexes);
 
 % Initialization
 flag = 1;
 iter = 1;
 % LS solution for initializing w
-if known_support
-    Z_old = reshape(pinv(B)*y, S, L);
-else
-    Z_old = reshape(pinv(B)*y, N, L);
-    Z1_old = Z_old/2;
-    Z2_old = Z_old/2;
-end
+Z_old = reshape(pinv(B)*y, N, L);
+Z1_old = Z_old/2;
+Z2_old = Z_old/2;
 
 % Majorization-minimization
 while (flag == 1 && iter <= maxiter)
@@ -86,29 +46,19 @@ while (flag == 1 && iter <= maxiter)
 
     wx1 = 1./(sqrt(sum(abs(Z1_old).^2, 2)) + epsilon_normx);
     wx2 = 1./(sqrt(sum(abs(Z2_old).^2, 2)) + epsilon_normx);
-    assert(isempty(known_indexes))
 
     cvx_begin quiet
-        if known_support
-            variable Z1(S, L);
-            variable Z2(S, L);
-        else
-            variable Z1(N, L);
-            variable Z2(N, L);
-        end
+        variable Z1(N, L);
+        variable Z2(N, L);
 
         Z = Z1+Z2;
         pho_Z1 = 5;
         tau_Z2 = 1.3;
         minimize( pho_Z1*norm_nuc(Z1) + norm_nuc(Z2) + ...
                   wx1'*norms(Z1, 2, 2) + tau_Z2*wx2'*norms(Z2, 2, 2) );
-        
+
         subject to
             B*Z(:) == y;
-            for kk = 1:N_known-1
-                error('We should not be doing known indexes now.')
-                Z(known_indexes(kk),:)*x_known(kk+1) == x_known(kk)*Z(known_indexes(kk+1),:);
-            end
     cvx_end
 
 %    fprintf('%d %d %d %d\n', pho_Z1*norm_nuc(Z1), norm_nuc(Z2), ...
@@ -116,7 +66,7 @@ while (flag == 1 && iter <= maxiter)
 %                             tau_Z2*wx2'*norms(Z2, 2, 2))
 
     if isempty(strfind(cvx_status, 'Solved'))
-        fname = sprintf('failed_problem_sparse_bss_nuclear_v%s', ...
+        fname = sprintf('failed_problem_bss_nuclear_v%s', ...
                         datestr(now, 'ddmmyyyyHHMMSS'));
         warning(sprintf('cvx_status not Solved, saving %s.', fname))
         save(fname)
@@ -126,7 +76,7 @@ while (flag == 1 && iter <= maxiter)
     end
 
     difference = norm(Z - Z_old,'fro')/norm(Z_old,'fro');
-    
+
     if ~isempty(strfind(cvx_status, 'Infeasible'))
         % Stop the algorithm
         if verbose
@@ -154,7 +104,7 @@ while (flag == 1 && iter <= maxiter)
             iter = iter + 1;
         end
     end
-        
+
 end
 
 Z1_hat = Z1;
