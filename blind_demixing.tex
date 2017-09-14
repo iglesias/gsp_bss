@@ -1,0 +1,31 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts,amssymb}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+
+\newcommand{\numSources}{\text{P}}
+\newcommand{\sourceIndex}{\text{p}}
+\renewcommand{\vec}[1]{\text{vec}\left(#1\right)}
+
+\input{mysymbol.sty}
+
+\begin{document}
+
+\begin{equation}
+\bby = \sum_{\sourceIndex=1}^{\numSources} \bbH_{\sourceIndex} \bbx_{\sourceIndex}
+\end{equation}
+
+\begin{equation}
+\bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vec{\bbZ_{\sourceIndex}}
+\end{equation}
+
+\begin{equation}
+\bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vec{\bbZ_{\sourceIndex}}
+\end{equation}
+
+\end{document}
