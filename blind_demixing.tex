@@ -18,16 +18,16 @@
 
 \begin{document}
 
+\section*{Blind demixing}
+
 \begin{equation}
   \bby = \sum_{\sourceIndex=1}^{\numSources} \bbH_{\sourceIndex} \bbx_{\sourceIndex}
 \end{equation}
 
-\begin{equation}
-  \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex})
-\end{equation}
+\subsection*{Single graph}
 
 \begin{equation}
-  \bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vect(\bbZ_{\sourceIndex})
+  \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex})
 \end{equation}
 
 Blind demixing feasibility with filters defined on a common graph:
@@ -38,13 +38,13 @@ Blind demixing feasibility with filters defined on a common graph:
   & \|\bbZ_{1}\|_{2,0} = \|\bbZ_{2}\|_{2,0} = \ldots = \|\bbZ_{\numSources}\|_{2,0} = \rmS \nonumber
 \end{align}
 
-Let $\bbZ$ denote $\sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$.
+Optimization:
 \begin{align}
   \mathop{\text{minizime}}_{\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}} \quad & \sum_{\sourceIndex=1}^{\numSources} \rank(\bbZ_{\sourceIndex}) + \|\bbZ_{\sourceIndex}\|_{2,0} \\
   \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex}) \nonumber
 \end{align}
 
-Maybe we should change this problem to 
+In the simulations, we have observed that it is challenging for convex relaxations of the problem above to separate the true $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ successfully. Therefore, maybe it is better to formulate the problem in terms of $\bbZ = \sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$:
 \begin{align}
   \mathop{\text{minizime}}_{\bbZ} \quad & \rank(\bbZ) + \|\bbZ\|_{2,0} \\
   \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT} \vect(\bbZ) \nonumber
@@ -53,5 +53,25 @@ Maybe we should change this problem to
 Assuming that $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\bbh_{i}^{\rmT} \bbh_{j} = 0$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, each of $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ can be recovered from $\svd(\bbZ)$ (providing that the singular values of $\bbZ$ are all different).
 
 Alternatively, if $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\tilde \bbh_{i}^{\rmT} \tilde \bbh_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, $\svd(\bbZ \Psi^{\rmT})$ yields the rank-one matrices $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$.
+
+\subsection*{Multiple graphs}
+
+\begin{equation}
+  \bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vect(\bbZ_{\sourceIndex})
+\end{equation}
+
+Optimization:
+\begin{align}
+  \mathop{\text{minizime}}_{\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}} \quad & \sum_{\sourceIndex=1}^{\numSources} \rank(\bbZ_{\sourceIndex}) + \tau \sum_{\sourceIndex=p}^{\numSources} \|\bbZ_{\sourceIndex}\|_{2,0} \\
+  \text{subject to} \quad & \bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vect(\bbZ_{\sourceIndex}) \nonumber
+\end{align}
+
+Convex approximations:
+\begin{itemize}
+  \item As a surrogate of the $\ell_{2,0}$ norm, to yield better results than the $\ell_{2,1}$ surrogate, we use the log of the $\ell_{1}$ norms.
+  \item Following a similar reasoning, the log-det is used as a surrogate of the rank minimization instead of the nuclear norm surrogate.
+\end{itemize}
+
+Since both of these surrogates lead to a non-convex objective, we follow the majorization-minimization approach. This method relies on an initial guess which can be obtained as a solution of the convex problem obtained using the nuclear and $\ell_{2,1}$ surrogates.
 
 \end{document}
