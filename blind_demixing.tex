@@ -20,9 +20,16 @@
 
 \section*{Blind demixing}
 
+We consider the problem of demixing $\numSources$ inputs signal or sources $\bbx_{\sourceIndex} \in \mathbb{R}^{\rmN}, \ \sourceIndex=1,\ldots,\numSources$ combined in a single observation $\bby \in \mathbb{R}^{\rmN}$. Before the sources are combined, each of them is transformed by a graph filter whose coefficients are given by $\bbh_{\sourceIndex} \in \mathbb{R}^{\rmL}, \ \sourceIndex=1,\ldots,\numSources$. The general model relating $\bby$ and $\bbx_{\sourceIndex}$ is given by:
 \begin{equation}
   \bby = \sum_{\sourceIndex=1}^{\numSources} \bbH_{\sourceIndex} \bbx_{\sourceIndex}
 \end{equation}
+
+We are interested in leveraging the sparsity in the $\bbx_{\sourceIndex}$ and we will take that $\|\bbx_{\sourceIndex}\|_{0}=\rmS, \ \sourceIndex=1,2,\ldots,\numSources$ with $\rmS < \rmN$. Depending on whether all the graph filters are defined on a common graph or on different graphs, we differentiate the single and multiple graph cases of blind demixing.
+
+\vspace{5mm}
+\noindent
+\underline{Notation}: $\bbV \in \mathbb{R}^{\rmN \times \rmN}$ denotes the matrix of eigenvectors of the graph-shift operator and $\bbU \in \mathbb{R}^{\rmN \times \rmN}$ its inverse. $\Lambda \in \mathbb{R}^{\rmN \times \rmN}$ is the diagonal matrix of the graph-shift operator's eigenvalues (denoted by $\lambda_{i}, \ i=1,2,\ldots,\rmN$). $\Psi \in \mathbb{R}^{\rmN \times \rmL}$ is the Vandermonde matrix whose entry $[\Psi]_{i,l}$ is $\lambda_{i}^{l-1}$. Furthermore, $\bbZ_{\sourceIndex}=\bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$.
 
 \subsection*{Single graph}
 
