@@ -10,8 +10,9 @@
 
 \newcommand{\numSources}{\text{P}}
 \newcommand{\sourceIndex}{\text{p}}
-\DeclareMathOperator*{\vect}{vec}
-\DeclareMathOperator*{\rank}{rank}
+\DeclareMathOperator{\vect}{vec}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\svd}{svd}
 
 \input{mysymbol.sty}
 
@@ -36,5 +37,21 @@ Blind demixing feasibility with filters defined on a common graph:
   & \rank(\bbZ_{1}) = \rank(\bbZ_{2}) = \ldots = \rank(\bbZ_{\numSources}) = 1 \nonumber \\
   & \|\bbZ_{1}\|_{2,0} = \|\bbZ_{2}\|_{2,0} = \ldots = \|\bbZ_{\numSources}\|_{2,0} = \rmS \nonumber
 \end{align}
+
+Let $\bbZ$ denote $\sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$.
+\begin{align}
+  \mathop{\text{minizime}}_{\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}} \quad & \sum_{\sourceIndex=1}^{\numSources} \rank(\bbZ_{\sourceIndex}) + \|\bbZ_{\sourceIndex}\|_{2,0} \\
+  \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex}) \nonumber
+\end{align}
+
+Maybe we should change this problem to 
+\begin{align}
+  \mathop{\text{minizime}}_{\bbZ} \quad & \rank(\bbZ) + \|\bbZ\|_{2,0} \\
+  \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT} \vect(\bbZ) \nonumber
+\end{align}
+
+Assuming that $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\bbh_{i}^{\rmT} \bbh_{j} = 0$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, each of $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ can be recovered from $\svd(\bbZ)$ (providing that the singular values of $\bbZ$ are all different).
+
+Alternatively, if $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\tilde \bbh_{i}^{\rmT} \tilde \bbh_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, $\svd(\bbZ \Psi^{\rmT})$ yields the rank-one matrices $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$.
 
 \end{document}
