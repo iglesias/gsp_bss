@@ -10,22 +10,31 @@
 
 \newcommand{\numSources}{\text{P}}
 \newcommand{\sourceIndex}{\text{p}}
-\renewcommand{\vec}[1]{\text{vec}\left(#1\right)}
+\DeclareMathOperator*{\vect}{vec}
+\DeclareMathOperator*{\rank}{rank}
 
 \input{mysymbol.sty}
 
 \begin{document}
 
 \begin{equation}
-\bby = \sum_{\sourceIndex=1}^{\numSources} \bbH_{\sourceIndex} \bbx_{\sourceIndex}
+  \bby = \sum_{\sourceIndex=1}^{\numSources} \bbH_{\sourceIndex} \bbx_{\sourceIndex}
 \end{equation}
 
 \begin{equation}
-\bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vec{\bbZ_{\sourceIndex}}
+  \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex})
 \end{equation}
 
 \begin{equation}
-\bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vec{\bbZ_{\sourceIndex}}
+  \bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vect(\bbZ_{\sourceIndex})
 \end{equation}
+
+Blind demixing feasibility with filters defined on a common graph:
+\begin{align}
+  \mathop{\text{find}} \quad & \bbZ_{1}, \bbZ_{2}, \ldots, \bbZ_{\numSources} \\
+  \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex}) \nonumber \\
+  & \rank(\bbZ_{1}) = \rank(\bbZ_{2}) = \ldots = \rank(\bbZ_{\numSources}) = 1 \nonumber \\
+  & \|\bbZ_{1}\|_{2,0} = \|\bbZ_{2}\|_{2,0} = \ldots = \|\bbZ_{\numSources}\|_{2,0} = \rmS \nonumber
+\end{align}
 
 \end{document}
