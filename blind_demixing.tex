@@ -20,20 +20,23 @@
 
 \section*{Blind demixing}
 
-We consider the problem of demixing $\numSources$ inputs signal or sources $\bbx_{\sourceIndex} \in \mathbb{R}^{\rmN}, \ \sourceIndex=1,\ldots,\numSources$ combined in a single observation $\bby \in \mathbb{R}^{\rmN}$. Before the sources are combined, each of them is transformed by a graph filter whose coefficients are given by $\bbh_{\sourceIndex} \in \mathbb{R}^{\rmL}, \ \sourceIndex=1,\ldots,\numSources$. The general model relating $\bby$ and $\bbx_{\sourceIndex}$ is given by:
+We consider the problem of demixing $\numSources$ input signals or sources $\bbx_{\sourceIndex} \in \mathbb{R}^{\rmN}, \ \sourceIndex=1,\ldots,\numSources$ combined in a single observation $\bby \in \mathbb{R}^{\rmN}$. Before the sources are combined, each of them is transformed by a graph filter whose coefficients are given by $\bbh_{\sourceIndex} \in \mathbb{R}^{\rmL}, \ \sourceIndex=1,\ldots,\numSources$. The model relating $\bby$ and $\bbx_{\sourceIndex}$ is given by:
 \begin{equation}
+  \label{eq:blind_demixing_model}
   \bby = \sum_{\sourceIndex=1}^{\numSources} \bbH_{\sourceIndex} \bbx_{\sourceIndex}
 \end{equation}
 
-We are interested in leveraging the sparsity in the $\bbx_{\sourceIndex}$ and we will take that $\|\bbx_{\sourceIndex}\|_{0}=\rmS, \ \sourceIndex=1,2,\ldots,\numSources$ with $\rmS < \rmN$. Depending on whether all the graph filters are defined on a common graph or on different graphs, we differentiate the single and multiple graph cases of blind demixing.
+We are interested in leveraging sparsity in $\bbx_{\sourceIndex}$ and so $\|\bbx_{\sourceIndex}\|_{0}=\rmS$ with $\rmS < \rmN$ and $\sourceIndex=1,2,\ldots,\numSources$. Depending on whether all the graph filters are defined on a common graph or on different graphs, we differentiate the single and multiple graph cases of blind demixing.
 
 \vspace{5mm}
 \noindent
-\underline{Notation}: $\bbV \in \mathbb{R}^{\rmN \times \rmN}$ denotes the matrix of eigenvectors of the graph-shift operator and $\bbU \in \mathbb{R}^{\rmN \times \rmN}$ its inverse. $\Lambda \in \mathbb{R}^{\rmN \times \rmN}$ is the diagonal matrix of the graph-shift operator's eigenvalues (denoted by $\lambda_{i}, \ i=1,2,\ldots,\rmN$). $\Psi \in \mathbb{R}^{\rmN \times \rmL}$ is the Vandermonde matrix whose entry $[\Psi]_{i,l}$ is $\lambda_{i}^{l-1}$. Furthermore, $\bbZ_{\sourceIndex}=\bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$.
+\underline{Notation}: $\bbV \in \mathbb{R}^{\rmN \times \rmN}$ denotes the matrix of eigenvectors of the graph-shift operator and $\bbU \in \mathbb{R}^{\rmN \times \rmN}$ its inverse. $\bbLambda \in \mathbb{R}^{\rmN \times \rmN}$ is the diagonal matrix of the graph-shift operator's eigenvalues (denoted by $\lambda_{i}, \ i=1,2,\ldots,\rmN$). $\bbPsi \in \mathbb{R}^{\rmN \times \rmL}$ is the Vandermonde matrix whose entry $[\bbPsi]_{i,l}$ is $\lambda_{i}^{l-1}$. Furthermore, $\bbZ_{\sourceIndex}=\bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$.
 
 \subsection*{Single graph}
 
+The input-output relation in \eqref{eq:blind_demixing_model} can be rewritten as a linear relationship between $\bby$ and the rank-one matrices $\bbZ_{\sourceIndex}$:
 \begin{equation}
+  \label{eq:blind_demixing_sg_constraint}
   \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex})
 \end{equation}
 
@@ -51,7 +54,7 @@ Optimization:
   \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT}\sum_{\sourceIndex=1}^{\numSources} \vect(\bbZ_{\sourceIndex}) \nonumber
 \end{align}
 
-In the simulations, we have observed that it is challenging for convex relaxations of the problem above to separate the true $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ successfully. Therefore, maybe it is better to formulate the problem in terms of $\bbZ = \sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$:
+In the simulations, we have observed that it is challenging for convex relaxations of the problem above to separate the true $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ successfully. Therefore, it may be better to formulate the problem in terms of $\bbZ = \sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$:
 \begin{align}
   \mathop{\text{minizime}}_{\bbZ} \quad & \rank(\bbZ) + \|\bbZ\|_{2,0} \\
   \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT} \vect(\bbZ) \nonumber
@@ -61,24 +64,27 @@ Assuming that $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\bbh_{i}^{\rmT} \bbh_{j} = 0$ 
 
 Alternatively, if $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\tilde \bbh_{i}^{\rmT} \tilde \bbh_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, $\svd(\bbZ \Psi^{\rmT})$ yields the rank-one matrices $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$.
 
+Similarly, it should also be possible to use $\svd(\bbU \bbZ)$ if we have that $\tilde \bbx_{i}^{\rmT} \tilde \bbx_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$.
+
 \subsection*{Multiple graphs}
 
+Analogous to \eqref{eq:blind_demixing_sg_constraint}, in the multi-graph case we have:
 \begin{equation}
   \bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vect(\bbZ_{\sourceIndex})
 \end{equation}
 
 Optimization:
 \begin{align}
-  \mathop{\text{minizime}}_{\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}} \quad & \sum_{\sourceIndex=1}^{\numSources} \rank(\bbZ_{\sourceIndex}) + \tau \sum_{\sourceIndex=p}^{\numSources} \|\bbZ_{\sourceIndex}\|_{2,0} \\
+  \mathop{\text{minizime}}_{\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}} \quad & \sum_{\sourceIndex=1}^{\numSources} \rank(\bbZ_{\sourceIndex}) + \tau \sum_{\sourceIndex=1}^{\numSources} \|\bbZ_{\sourceIndex}\|_{2,0} \\
   \text{subject to} \quad & \bby = \sum_{\sourceIndex=1}^{\numSources} \bbV_{\sourceIndex} \left(\bbPsi_{\sourceIndex}^{\rmT} \odot \bbU_{\sourceIndex}^{\rmT} \right)^{\rmT} \vect(\bbZ_{\sourceIndex}) \nonumber
 \end{align}
 
 Convex approximations:
 \begin{itemize}
-  \item As a surrogate of the $\ell_{2,0}$ norm, to yield better results than the $\ell_{2,1}$ surrogate, we use the log of the $\ell_{1}$ norms.
+  \item As a surrogate of the $\ell_{2,0}$ norm, to yield better results than the $\ell_{2,1}$ surrogate, we use the log of the $\ell_{1}$ norms along the columns.
   \item Following a similar reasoning, the log-det is used as a surrogate of the rank minimization instead of the nuclear norm surrogate.
 \end{itemize}
 
-Since both of these surrogates lead to a non-convex objective, we follow the majorization-minimization approach. This method relies on an initial guess which can be obtained as a solution of the convex problem obtained using the nuclear and $\ell_{2,1}$ surrogates.
+Since both of these surrogates lead to a non-convex objective, we follow the majorization-minimization approach. This method relies on an initial guess which can be obtained as a solution of the convex problem based on the nuclear and $\ell_{2,1}$ surrogates.
 
 \end{document}
