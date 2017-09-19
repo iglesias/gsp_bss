@@ -58,9 +58,9 @@ truth.x1Support = randperm(N, S);
 truth.x2Support = randperm(N, S);
 
 if isempty(intersect(truth.x1Support, truth.x2Support))
-  fprintf('Intersection of the supports of the inputs empty.\n')
+  fprintf('Intersection of the inputs'' supports empty.\n')
 else
-  fprintf('Intersection of the supports of the inputs non-empty.\n')
+  fprintf('Intersection of the inputs'' supports non-empty.\n')
 end
 
 truth.x1 = zeros(N, 1);
