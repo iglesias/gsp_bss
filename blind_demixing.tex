@@ -7,12 +7,14 @@
 \usepackage{color}
 \usepackage{pdfpages}
 \usepackage{graphicx}
+\usepackage{a4wide}
 
 \newcommand{\numSources}{\text{P}}
 \newcommand{\sourceIndex}{\text{p}}
-\DeclareMathOperator{\vect}{vec}
+\DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\rank}{rank}
 \DeclareMathOperator{\svd}{svd}
+\DeclareMathOperator{\vect}{vec}
 
 \input{mysymbol.sty}
 
@@ -30,7 +32,7 @@ We are interested in leveraging sparsity in $\bbx_{\sourceIndex}$ and so $\|\bbx
 
 \vspace{5mm}
 \noindent
-\underline{Notation}: $\bbV \in \mathbb{R}^{\rmN \times \rmN}$ denotes the matrix of eigenvectors of the graph-shift operator and $\bbU \in \mathbb{R}^{\rmN \times \rmN}$ its inverse. $\bbLambda \in \mathbb{R}^{\rmN \times \rmN}$ is the diagonal matrix of the graph-shift operator's eigenvalues (denoted by $\lambda_{i}, \ i=1,2,\ldots,\rmN$). $\bbPsi \in \mathbb{R}^{\rmN \times \rmL}$ is the Vandermonde matrix whose entry $[\bbPsi]_{i,l}$ is $\lambda_{i}^{l-1}$. Furthermore, $\bbZ_{\sourceIndex}=\bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$.
+\underline{Notation}: $\bbV \in \mathbb{R}^{\rmN \times \rmN}$ denotes the matrix of eigenvectors of the graph-shift operator and $\bbU \in \mathbb{R}^{\rmN \times \rmN}$ its inverse. $\bbLambda \in \mathbb{R}^{\rmN \times \rmN}$ is the diagonal matrix of the graph-shift operator's eigenvalues (denoted by $\lambda_{i}, \ i=1,2,\ldots,\rmN$). $\bbPsi \in \mathbb{R}^{\rmN \times \rmL}$ is the Vandermonde matrix whose entry $[\bbPsi]_{i,l}$ is $\lambda_{i}^{l-1}$. Furthermore, $\bbZ_{\sourceIndex}=\bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$. If $\bbA \in \mathbb{R}^{\rmN \times \rmM}$, then $\bbA_{i} \in \mathbb{R}^\rmN$ where $1 \leqslant i \leqslant \rmM$ denotes the $i$th column of $\bbA$.
 
 \subsection*{Single graph}
 
@@ -55,16 +57,21 @@ Optimization:
 \end{align}
 
 In the simulations, we have observed that it is challenging for convex relaxations of the problem above to separate the true $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ successfully. Therefore, it may be better to formulate the problem in terms of $\bbZ = \sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$:
+%
 \begin{align}
   \mathop{\text{minizime}}_{\bbZ} \quad & \rank(\bbZ) + \|\bbZ\|_{2,0} \\
   \text{subject to} \quad & \bby = \bbV \left(\bbPsi^{\rmT} \odot \bbU^{\rmT} \right)^{\rmT} \vect(\bbZ) \nonumber
 \end{align}
+%
+From the signular value decomposition (svd) of $\bbZ$, the individual $\bbZ_{\sourceIndex}$ can be obtained under certain conditions.
 
 Assuming that $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\bbh_{i}^{\rmT} \bbh_{j} = 0$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, each of $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$ can be recovered from $\svd(\bbZ)$ (providing that the singular values of $\bbZ$ are all different).
 
-Alternatively, if $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\tilde \bbh_{i}^{\rmT} \tilde \bbh_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, $\svd(\bbZ \Psi^{\rmT})$ yields the rank-one matrices $\bbZ_{1},\bbZ_{2},\ldots,\bbZ_{\numSources}$.
+Specifically, let the singular value decomposition of $\bbZ$ be given by $\bbZ = \bbL \bbSigma \bbR^{\rmT}$ with $\bbSigma = \diag([\sigma_1 \ \sigma_2 \ \ldots \ \sigma_{\numSources}]^{\rmT})$. Since $\bbZ = \sum_{\sourceIndex=1}^{\numSources} \bbZ_{\sourceIndex}$ and the $\bbZ_{\sourceIndex}$ are rank-one, then $\bbZ_{\sourceIndex} = \sigma_{\sourceIndex} \bbL_{\sourceIndex} \bbR_{\sourceIndex}^{\rmT}$.
 
-Similarly, it should also be possible to use $\svd(\bbU \bbZ)$ if we have that $\tilde \bbx_{i}^{\rmT} \tilde \bbx_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$.
+Alternatively, if $\bbx_{i}^{\rmT} \bbx_{j} = 0$ and $\tilde \bbh_{i}^{\rmT} \tilde \bbh_{j}$ $\forall \ 1 \leqslant i < j \leqslant \numSources$, $\svd(\bbZ \Psi^{\rmT})$ yields the rank-one matrices $\bbx_{1} \tilde \bbh_{1}^{\rmT},\bbx_{2} \tilde \bbh_{2}^{\rmT},\ldots,\bbx_{\numSources} \tilde \bbh_{\numSources}^{\rmT}$. In this case, $\bbZ \Psi^{\rmT} = \sum_{\sourceIndex=1}^{\numSources} \bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT} \Psi^{\rmT} = \sum_{\sourceIndex=1}^{\numSources} \bbx_{\sourceIndex} \tilde \bbh_{\sourceIndex}^{\rmT}$.
+
+Similarly, it should also be possible to use $\svd(\bbU \bbZ)$ if we have that $\tilde \bbx_{i}^{\rmT} \tilde \bbx_{j} = 0$ $\forall \ 1 \leqslant i < j \leqslant \numSources$. In particular, since $\bbU \bbZ = \sum_{\sourceIndex=1}^{\numSources} \bbU \bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT} = \sum_{\sourceIndex=1}^{\numSources} \tilde \bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$, the decomposition of $\bbU \bbZ$ into the sum of rank-one matrices provided by $\svd(\bbU \bbZ)$ yields the products $\tilde \bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$, from which $\bbZ_{\sourceIndex} = \bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$ is given by $\bbV \tilde \bbx_{\sourceIndex} \bbh_{\sourceIndex}^{\rmT}$.
 
 \subsection*{Multiple graphs}
 
