@@ -1,6 +1,14 @@
-function v = recovery_assesment(Z1, Z2, Z1_hat, Z2_hat)
+function v = recovery_assesment(Z, Z_hat)
 
-v = sqrt(norm(Z1_hat-Z1, 'fro')^2 + norm(Z2_hat-Z2, 'fro')^2) / ...
-    sqrt(norm(Z1, 'fro')^2 + norm(Z2, 'fro')^2);
+assert(length(Z) == size(Z_hat, 3))
+
+num = 0;
+den = 0;
+for i = 1:length(Z)
+  num = num + norm(Z_hat(:, :, i) - Z{i}, 'fro')^2;
+  den = den + norm(Z{i}, 'fro')^2;
+end
+
+v = sqrt(num) / sqrt(den);
 
 end
