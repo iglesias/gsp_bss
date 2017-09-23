@@ -1,3 +1,7 @@
+% Dependency to show progress of parfor:
+% https://github.com/DylanMuir/ParforProgMon
+% addpath ~/workspace/matlab/DylanMuir-ParforProgMon-9a1c257/
+
 N = 100;
 success = zeros(N, 1);
 verbose_multigraph_bss_logdet = false;
