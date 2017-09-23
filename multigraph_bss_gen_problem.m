@@ -37,26 +37,42 @@ shift_operator = ShiftOperator.Adjacency;
 % Edge existence probability.
 p = 0.1;
 for i = 1:numGraphs
-  % Adjacency matrix.
-  model.G(i).W = generate_connected_ER(N, p);
-  % Graph Laplacian.
-  model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
+  if i == 1
+    model.G(i).W = generate_connected_ER(N, p);
+
+    model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
+    [model.G(i).V, model.G(i).D] = eig(model.G(i).L);
+    model.G(i).U = inv(model.G(i).V);
+    model.G(i).lambda = diag(model.G(i).D);
+  else
+    while true
+      model.G(i).W = model.G(i-1).W;
+      idxs_to_change = randperm(N*N, round(0.85*N*N));
+      model.G(i).W(idxs_to_change) = rand(1, length(idxs_to_change)) < p;
+      model.G(i).W = triu(model.G(i).W, 1);
+      model.G(i).W = model.G(i).W + model.G(i).W';
+
+      model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
+      [model.G(i).V, model.G(i).D] = eig(model.G(i).L);
+      model.G(i).U = inv(model.G(i).V);
+      model.G(i).lambda = diag(model.G(i).D);
+
+      % Make sure the graph has one connected component.
+      if sum(abs(model.G(i).lambda) <= 1e-6) == 1
+        break
+      end
+    end
+  end
 
   assert(issymmetric(model.G(i).W))
   assert(issymmetric(model.G(i).L))
-
-  switch shift_operator
-  case ShiftOperator.Adjacency
-    model.G(i).S = model.G(i).W;
-  case ShiftOperator.Laplacian
-    model.G(i).S = model.G(i).L;
-  end
-
-  [model.G(i).V, Lambda] = eig(model.G(i).S);
-  model.G(i).U = inv(model.G(i).V);
-  model.G(i).lambda = diag(Lambda);
-  % disp(minmax(model.G(i).lambda'))
 end
+
+% This is not a very intuitive measure of graph dissimilarity for the graph generation
+% above. For instance, if the graphs are completely independent (just two ER generated
+% independently), we get only around 0.17 (ideally we would like to have a number like
+% 1 meaning completely dissimilar).
+fprintf('Graph dissimilarity: %.4f\n', sum(sum(abs(model.G(1).W - model.G(2).W)))/(N*N))
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
