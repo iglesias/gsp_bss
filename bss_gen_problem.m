@@ -1,5 +1,9 @@
 function  [truth, model, y] = bss_gen_problem
 
+numFilterCoeffs = 2;
+% Number of non-zero input nodes.
+S = 5;
+
 % Number of nodes.
 N = 50;
 % Edge existence probability.
@@ -20,7 +24,6 @@ assert(issymmetric(model.G.L))
 model.G.U = inv(model.G.V);
 model.G.lambda = diag(model.G.D);
 
-numFilterCoeffs = 2;
 data_distibution = DataDistribution.Uniform;
 
 switch data_distibution
@@ -51,8 +54,6 @@ end
 H = [H1 H2];
 
 % Input.
-% Number of non-zero input nodes.
-S = 5;
 
 truth.x1Support = randperm(N, S);
 truth.x2Support = randperm(N, S);

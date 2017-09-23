@@ -1,6 +1,10 @@
 function [truth, model, y] = multigraph_bss_gen_problem
 
-numGraphs = 3;
+numGraphs = 2;
+numFilterCoeffs = 2;
+% Number of non-zero input nodes.
+S = 1;
+
 % Number of nodes.
 N = 50;
 % Edge existence probability.
@@ -20,7 +24,6 @@ end
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
-numFilterCoeffs = 2;
 truth.h = zeros(numFilterCoeffs, numGraphs);
 data_distibution = DataDistribution.Uniform;
 
@@ -49,8 +52,6 @@ for i = 1:numGraphs
 end
 
 % Input.
-% Number of non-zero input nodes.
-S = 1;
 
 truth.xSupport = zeros(numGraphs, S);
 for i = 1:numGraphs
