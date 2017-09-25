@@ -2,6 +2,7 @@ function [truth, model, y] = multigraph_bss_gen_problem
 
 numGraphs = 2;
 numFilterCoeffs = 2;
+data_distribution = DataDistribution.Uniform;
 % Number of non-zero input nodes.
 S = 1;
 
@@ -25,19 +26,19 @@ end
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
 truth.h = zeros(numFilterCoeffs, numGraphs);
-data_distibution = DataDistribution.Uniform;
 
-switch data_distibution
+switch data_distribution
 case DataDistribution.Normal
   truth.h = randn(numFilterCoeffs, numGraphs);
-  truth.h = truth.h / repmat(norms(truth.h, 2, 1), numFilterCoeffs, 1);
+  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), numFilterCoeffs, 1);
 
 case DataDistribution.Uniform
   truth.h = rand(numFilterCoeffs, numGraphs);
+  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), numFilterCoeffs, 1);
 end
 
 for i = 1:numGraphs
-  Psi{i} = repmat(model.G(i).lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
+  model.Psi{i} = repmat(model.G(i).lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
 end
 
 % Build filter matrices.
@@ -67,23 +68,24 @@ end
 
 truth.x = zeros(N, numGraphs);
 
-switch data_distibution
+switch data_distribution
 case DataDistribution.Normal
   for i = 1:numGraphs
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
-    truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i));
+    truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 
 case DataDistribution.Uniform
   for i = 1:numGraphs
     truth.x(truth.xSupport(i, :), i) = rand(S, 1);
+    truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 end
 
 y = H*truth.x(:);
 
 for i = 1:numGraphs
-  model.A{i} = kr(Psi{i}', model.G(i).U')';
+  model.A{i} = kr(model.Psi{i}', model.G(i).U')';
 end
 
 for i = 1:numGraphs
