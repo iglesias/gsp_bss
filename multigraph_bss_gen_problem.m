@@ -1,4 +1,4 @@
-function [truth, model, y] = multigraph_bss_gen_problem
+function [truth, model, y] = multigraph_bss_gen_problem(num_nodes)
 
 numGraphs = 2;
 numFilterCoeffs = 2;
@@ -7,7 +7,12 @@ data_distribution = DataDistribution.Uniform;
 S = 1;
 
 % Number of nodes.
-N = 50;
+if exist('num_nodes', 'var')
+  N = num_nodes;
+else
+  N = 50;
+end
+
 % Edge existence probability.
 p = 0.1;
 % Adjacency matrices.
