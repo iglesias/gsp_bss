@@ -5,8 +5,7 @@ verbose_self = true;
 do_plot = false;
 
 [truth, model, y] = bss_gen_problem;
-[Z1_hat, Z2_hat] = bss_logdet(y, model.A, model.G.V, verbose_bss_logdet);
-Z_hat = Z1_hat + Z2_hat;
+[Z_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
 
 [UZ, SZ, VZ] = svd(Z_hat, 'econ');
 Z1_hat = SZ(1,1)*UZ(:,1)*VZ(:,1)';

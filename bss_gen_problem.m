@@ -1,11 +1,13 @@
 function  [truth, model, y] = bss_gen_problem
 
 numFilterCoeffs = 2;
+data_distibution = DataDistribution.Uniform;
 % Number of non-zero input nodes.
 S = 5;
 
 % Number of nodes.
 N = 50;
+
 % Edge existence probability.
 p = 0.1;
 % Adjacency matrix.
@@ -24,18 +26,15 @@ assert(issymmetric(model.G.L))
 model.G.U = inv(model.G.V);
 model.G.lambda = diag(model.G.D);
 
-data_distibution = DataDistribution.Uniform;
-
 switch data_distibution
 case DataDistribution.Normal
   truth.h1 = randn(2, 1);
   truth.h2 = randn(2, 1);
 
-  truth.h1 = truth.h1/norm(truth.h1);
-  truth.h2 = truth.h2/norm(truth.h2);
 case DataDistribution.Uniform
   truth.h1 = rand(2, 1);
-  truth.h2 = rand(2, 1);
+%  truth.h2 = rand(2, 1);
+  truth.h2 = [truth.h1(2); -truth.h1(1)];
 end
 
 Psi = repmat(model.G.lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
@@ -72,9 +71,6 @@ case DataDistribution.Normal
   truth.x1(truth.x1Support) = randn(S, 1);
   truth.x2(truth.x2Support) = randn(S, 1);
 
-  truth.x1 = truth.x1/norm(truth.x1);
-  truth.x2 = truth.x2/norm(truth.x2);
-
 case DataDistribution.Uniform
   truth.x1(truth.x1Support) = rand(S, 1);
   truth.x2(truth.x2Support) = rand(S, 1);
@@ -84,9 +80,8 @@ x = [truth.x1; truth.x2];
 y = H*x;
 
 model.A = kr(Psi', model.G.U')';
-xSupportToEstimate = 1:N;
 
-truth.Z1 = truth.x1(xSupportToEstimate)*truth.h1';
-truth.Z2 = truth.x2(xSupportToEstimate)*truth.h2';
+truth.Z1 = truth.x1*truth.h1';
+truth.Z2 = truth.x2*truth.h2';
 
 end
