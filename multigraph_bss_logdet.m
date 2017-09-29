@@ -1,4 +1,4 @@
-function Z_hat = multigraph_bss_logdet(y, A, V, verbose)
+function [Z_hat, iter] = multigraph_bss_logdet(y, A, V, verbose)
 
 if ~exist('verbose', 'var')
   verbose = false;

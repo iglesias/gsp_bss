@@ -11,14 +11,16 @@ SUCCESS = zeros(1, length(NUM_NODES));
 for m = 1:length(NUM_NODES)
   tic
   success = zeros(N, 1);
+  iters_to_solve = inf(N, 1);
 
   ppm = ParforProgMon('Work', N);
   parfor n = 1:N
     [truth, model, y] = multigraph_bss_gen_problem(NUM_NODES(m));
-    Z_hat = multigraph_bss_logdet(y, model.A, model.V, ...
+    [Z_hat, iter] = multigraph_bss_logdet(y, model.A, model.V, ...
                                   verbose_multigraph_bss_logdet);
     if recovery_assessment(truth.Z, Z_hat) < 1e-3
       success(n) = 1;
+      iters_to_solve(n) = iter;
     end
     ppm.increment();
   end
