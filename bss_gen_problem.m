@@ -1,12 +1,14 @@
 function  [truth, model, y] = bss_gen_problem
 
-numFilterCoeffs = 2;
+numFilters = 3;
 data_distibution = DataDistribution.Uniform;
+% Order of the filters (number of filter coefficients).
+L = 3;
 % Number of non-zero input nodes.
-S = 5;
+S = 1;
 
 % Number of nodes.
-N = 50;
+N = 100;
 
 % Edge existence probability.
 p = 0.1;
@@ -26,62 +28,129 @@ assert(issymmetric(model.G.L))
 model.G.U = inv(model.G.V);
 model.G.lambda = diag(model.G.D);
 
+
+truth.h = zeros(L, numFilters);
+
+assert(L == 3)
+assert(2 <= numFilters && numFilters <= 3)
+
 switch data_distibution
 case DataDistribution.Normal
-  truth.h1 = randn(2, 1);
-  truth.h2 = randn(2, 1);
+  truth.h(:, 1) = randn(L, 1);
+
+  truth.h([1 2], 2) = randn(2, 1);
+
+  if numFilters > 2
+    truth.h(1, 3) = randn;
+  end
 
 case DataDistribution.Uniform
-  truth.h1 = rand(2, 1);
-%  truth.h2 = rand(2, 1);
-  truth.h2 = [truth.h1(2); -truth.h1(1)];
+  truth.h(:, 1) = rand(L, 1);
+
+  truth.h([1 2], 2) = rand(2, 1);
+
+  if numFilters > 2
+    truth.h(1, 3) = rand;
+  end
 end
 
-Psi = repmat(model.G.lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
+truth.h(3, 2) = - (truth.h([1 2], 1)' * truth.h([1 2], 2)) / truth.h(3, 1);
+if numFilters > 2
+  truth.h([2 3], 3) = [truth.h([2 3], 1)'; truth.h([2 3], 2)'] \ ...
+                      (-truth.h(1, 3) * [truth.h(1,1); truth.h(1,2)]);
+end
+
+for i = 1:numFilters
+  truth.h(:, i) = truth.h(:, i) / norm(truth.h(:, i), 1);
+end
+
+model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
+% invPsi = pinv(model.Psi);
+
+% assert(mod(N, numFilters) == 0)
+% h1_tilde = [rand(2, 1); zeros(N-2, 1)];
+% h2_tilde = [zeros(N-2, 1); rand(2, 1)];
+%
+% truth.h1 = invPsi*h1_tilde;
+% truth.h2 = invPsi*h2_tilde;
+%
+% truth.h1 = truth.h1 / norm(truth.h1, 1);
+% truth.h2 = truth.h2 / norm(truth.h2, 1);
 
 % Build filter matrices.
-H1 = truth.h1(1)*eye(N);
-for l = 1:numFilterCoeffs-1
-  H1 = H1 + truth.h1(l+1)*model.G.L^l;
-end
+H = zeros(N, N * numFilters);
+for i = 1:numFilters
+  Hi = truth.h(1, i)*eye(N);
+  for l = 1:L-1
+    Hi = Hi + truth.h(l+1, i)*model.G.L^l;
+  end
 
-H2 = truth.h2(1)*eye(N);
-for l = 1:numFilterCoeffs-1
-  H2 = H2 + truth.h2(l+1)*model.G.L^l;
+  H(:, N*(i-1)+1:N*i) = Hi;
 end
-
-H = [H1 H2];
 
 % Input.
 
-truth.x1Support = randperm(N, S);
-truth.x2Support = randperm(N, S);
+truth.xSupport = zeros(numFilters, S);
+while true
+  for i = 1:numFilters
+    truth.xSupport(i, :) = randperm(N, S);
+  end
 
-if isempty(intersect(truth.x1Support, truth.x2Support))
-  fprintf('Intersection of the inputs'' supports empty.\n')
-else
-  fprintf('Intersection of the inputs'' supports non-empty.\n')
+  empty_intersection = true;
+  for i = 1:numFilters-1
+    for j = i+1:numFilters
+      if ~isempty(intersect(truth.xSupport(i, :), truth.xSupport(j, :)))
+        empty_intersection = false;
+      end
+    end
+  end
+
+  if empty_intersection
+    break
+  end
 end
 
-truth.x1 = zeros(N, 1);
-truth.x2 = zeros(N, 1);
+truth.x = zeros(N, numFilters);
 
 switch data_distibution
 case DataDistribution.Normal
-  truth.x1(truth.x1Support) = randn(S, 1);
-  truth.x2(truth.x2Support) = randn(S, 1);
+  for i = 1:numFilters
+    truth.x(truth.xSupport(i, :), i) = randn(S, 1);
+  end
 
 case DataDistribution.Uniform
-  truth.x1(truth.x1Support) = rand(S, 1);
-  truth.x2(truth.x2Support) = rand(S, 1);
+  for i = 1:numFilters
+    truth.x(truth.xSupport(i, :), i) = rand(S, 1);
+  end
 end
 
-x = [truth.x1; truth.x2];
-y = H*x;
+% Normalize input signals.
+for i = 1:numFilters
+  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i));
+end
 
-model.A = kr(Psi', model.G.U')';
+for i = 1:numFilters-1
+  for j = i+1:numFilters
+    assert(truth.x(:, i)' * truth.x(:, j) == 0)
+    assert(abs(truth.h(:, i)' * truth.h(:, j)) < 1e-10)
+  end
+end
 
-truth.Z1 = truth.x1*truth.h1';
-truth.Z2 = truth.x2*truth.h2';
+y = H*truth.x(:);
+
+model.A = kr(model.Psi', model.G.U')';
+
+truth.Zsum = zeros(N, L);
+for i = 1:numFilters
+  truth.Z{i} = truth.x(:, i)*truth.h(:, i)';
+  truth.Zsum = truth.Zsum + truth.Z{i};
+end
+
+svd(truth.Zsum)
+
+% [UZPsi, SZPsi, VZPsi] = svd((truth.Z1 + truth.Z2)*model.Psi');
+% diag(SZPsi)'
+% norm(SZPsi(1,1)*UZPsi(:,1)*VZPsi(:,1)' - truth.x1 * (model.Psi*truth.h1)')
+% norm(SZPsi(2,2)*UZPsi(:,2)*VZPsi(:,2)' - truth.x2 * (model.Psi*truth.h2)')
 
 end
