@@ -1,7 +1,8 @@
 function [truth, model, y] = multigraph_bss_gen_problem(num_nodes)
 
 numGraphs = 2;
-numFilterCoeffs = 2;
+% Number of filter coefficients.
+L = 2;
 data_distribution = DataDistribution.Uniform;
 % Number of non-zero input nodes.
 S = 1;
@@ -30,27 +31,27 @@ end
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
-truth.h = zeros(numFilterCoeffs, numGraphs);
+truth.h = zeros(L, numGraphs);
 
 switch data_distribution
 case DataDistribution.Normal
-  truth.h = randn(numFilterCoeffs, numGraphs);
-  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), numFilterCoeffs, 1);
+  truth.h = randn(L, numGraphs);
+  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 
 case DataDistribution.Uniform
-  truth.h = rand(numFilterCoeffs, numGraphs);
-  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), numFilterCoeffs, 1);
+  truth.h = rand(L, numGraphs);
+  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 end
 
 for i = 1:numGraphs
-  model.Psi{i} = repmat(model.G(i).lambda, 1, numFilterCoeffs).^repmat([0:numFilterCoeffs-1], N, 1);
+  model.Psi{i} = repmat(model.G(i).lambda, 1, L).^repmat([0:L-1], N, 1);
 end
 
 % Build filter matrices.
 H = zeros(N, N * numGraphs);
 for i = 1:numGraphs
   Hi = truth.h(1, i)*eye(N);
-  for l = 1:numFilterCoeffs-1
+  for l = 1:L-1
     Hi = Hi + truth.h(l+1, i)*model.G(i).L^l;
   end
 
