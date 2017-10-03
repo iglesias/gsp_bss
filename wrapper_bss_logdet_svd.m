@@ -7,7 +7,6 @@ verbose_self = true;
 [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
 
 [UZ, SZ, VZ] = svd(Zsum_hat, 'econ');
-SZ
 numFilters = length(truth.Z);
 Z_hat = zeros([size(Zsum_hat) numFilters]);
 for i = 1:numFilters

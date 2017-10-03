@@ -1,14 +1,18 @@
-function  [truth, model, y] = bss_gen_problem
+function  [truth, model, y] = bss_gen_problem(num_nodes)
 
 numFilters = 3;
-data_distibution = DataDistribution.Uniform;
-% Order of the filters (number of filter coefficients).
-L = 3;
 % Number of non-zero input nodes.
-S = 1;
+S = 3;
+
+data_distibution = DataDistribution.Uniform;
+shift_operator = ShiftOperator.Adjacency;
 
 % Number of nodes.
-N = 100;
+if exist('num_nodes', 'var')
+  N = num_nodes;
+else
+  N = 50;
+end
 
 % Edge existence probability.
 p = 0.1;
@@ -20,18 +24,30 @@ model.G.L = diag(sum(model.G.W))-model.G.W;
 assert(issymmetric(model.G.W))
 assert(issymmetric(model.G.L))
 
+switch shift_operator
+case ShiftOperator.Adjacency
+  model.G.S = model.G.W;
+case ShiftOperator.Laplacian
+  model.G.S = model.G.L;
+end
+
 %figure
 %matlabGraph = graph(G.W);
 %plot(matlabGraph)
 
-[model.G.V, model.G.D] = eig(model.G.L);
+[model.G.V, Lambda] = eig(model.G.S);
 model.G.U = inv(model.G.V);
-model.G.lambda = diag(model.G.D);
+model.G.lambda = diag(Lambda);
 
-
+% Filter coefficients.
+% Order of the filters (number of filter coefficients).
+L = 3;
 truth.h = zeros(L, numFilters);
-
+% Because of the way we are coming up with orthogonal vectors,
+% which is fixed to three-dimensional vectors.
 assert(L == 3)
+% Because we are using three-dimensional vectors for the
+% filter coefficients and they must be mutually orthogonal.
 assert(2 <= numFilters && numFilters <= 3)
 
 switch data_distibution
@@ -82,7 +98,7 @@ H = zeros(N, N * numFilters);
 for i = 1:numFilters
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
-    Hi = Hi + truth.h(l+1, i)*model.G.L^l;
+    Hi = Hi + truth.h(l+1, i)*model.G.S^l;
   end
 
   H(:, N*(i-1)+1:N*i) = Hi;
@@ -145,8 +161,6 @@ for i = 1:numFilters
   truth.Z{i} = truth.x(:, i)*truth.h(:, i)';
   truth.Zsum = truth.Zsum + truth.Z{i};
 end
-
-svd(truth.Zsum)
 
 % [UZPsi, SZPsi, VZPsi] = svd((truth.Z1 + truth.Z2)*model.Psi');
 % diag(SZPsi)'

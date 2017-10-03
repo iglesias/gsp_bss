@@ -20,14 +20,8 @@ for i = 1:numFilters
           svd(Z_hat(:, :, i)))
 end
 
-P = perms([1:numFilters]);
-for p = 1:size(P, 1)
-  for i = 1:numFilters
-    Z_hat_rearranged(:, :, i) = Z_hat(:, :, P(p, i));
-  end
-  fprintf('%d\n', recovery_assessment(truth.Z, Z_hat_rearranged));
-end
-
+fprintf('Recovery assessment: %d\n', ...
+        recovery_assessment_perms(truth.Z, Z_hat));
 
 fprintf('\n\n')
 
