@@ -24,7 +24,7 @@ for i = 1:numGraphs
   assert(issymmetric(model.G(i).W))
   assert(issymmetric(model.G(i).L))
 
-  [model.G(i).V, model.G(i).D] = eig(model.G(i).L);
+  [model.G(i).V, model.G(i).D] = eig(model.G(i).W);
   model.G(i).U = inv(model.G(i).V);
   model.G(i).lambda = diag(model.G(i).D);
 end
@@ -52,7 +52,7 @@ H = zeros(N, N * numGraphs);
 for i = 1:numGraphs
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
-    Hi = Hi + truth.h(l+1, i)*model.G(i).L^l;
+    Hi = Hi + truth.h(l+1, i)*model.G(i).W^l;
   end
 
   H(:, N*(i-1)+1:N*i) = Hi;
