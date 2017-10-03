@@ -7,7 +7,7 @@ L = 2;
 S = 1;
 
 data_distribution = DataDistribution.Uniform;
-shift_operator = ShiftOperator.Laplacian;
+shift_operator = ShiftOperator.Adjacency;
 
 % Number of nodes.
 if exist('num_nodes', 'var')
@@ -18,7 +18,6 @@ end
 
 % Edge existence probability.
 p = 0.1;
-% Adjacency matrices.
 for i = 1:numGraphs
   % Adjacency matrix.
   model.G(i).W = generate_connected_ER(N, p);
@@ -38,6 +37,7 @@ for i = 1:numGraphs
   [model.G(i).V, Lambda] = eig(model.G(i).S);
   model.G(i).U = inv(model.G(i).V);
   model.G(i).lambda = diag(Lambda);
+  % disp(minmax(model.G(i).lambda'))
 end
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
@@ -57,6 +57,7 @@ end
 
 for i = 1:numGraphs
   model.Psi{i} = repmat(model.G(i).lambda, 1, L).^repmat([0:L-1], N, 1);
+  % disp(minmax(vec(model.Psi{i})'))
 end
 
 % Build filter matrices.
@@ -69,6 +70,8 @@ for i = 1:numGraphs
 
   H(:, N*(i-1)+1:N*i) = Hi;
 end
+
+% disp(minmax(H(:)'))
 
 % Input.
 
@@ -104,6 +107,7 @@ y = H*truth.x(:);
 
 for i = 1:numGraphs
   model.A{i} = kr(model.Psi{i}', model.G(i).U')';
+  % disp(minmax(vec(model.A{i})'))
 end
 
 for i = 1:numGraphs
