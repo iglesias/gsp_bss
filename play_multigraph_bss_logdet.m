@@ -13,7 +13,7 @@ for m = 1:length(NUM_NODES)
   success = zeros(N, 1);
   iters_to_solve = inf(N, 1);
 
-  ppm = ParforProgMon('Work', N);
+  ppm = ParforProgMon(sprintf('num_nodes=%d ', NUM_NODES(m)), N);
   parfor n = 1:N
     [truth, model, y] = multigraph_bss_gen_problem(NUM_NODES(m));
     [Z_hat, iter] = multigraph_bss_logdet(y, model.A, model.V, ...
@@ -25,8 +25,8 @@ for m = 1:length(NUM_NODES)
     ppm.increment();
   end
 
-  SUCCESS(m) = sum(success)/N
-  TIME(m) = toc
+  SUCCESS(m) = sum(success)/N;
+  TIME(m) = toc;
 end
 
 display(NUM_NODES)

@@ -20,7 +20,9 @@ end
 p = 0.1;
 % Adjacency matrices.
 for i = 1:numGraphs
+  % Adjacency matrix.
   model.G(i).W = generate_connected_ER(N, p);
+  % Graph Laplacian.
   model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
 
   assert(issymmetric(model.G(i).W))
@@ -40,6 +42,7 @@ end
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
+% Filter coefficients.
 truth.h = zeros(L, numGraphs);
 
 switch data_distribution
