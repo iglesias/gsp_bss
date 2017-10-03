@@ -3,9 +3,11 @@ function [truth, model, y] = multigraph_bss_gen_problem(num_nodes)
 numGraphs = 2;
 % Number of filter coefficients.
 L = 2;
-data_distribution = DataDistribution.Uniform;
 % Number of non-zero input nodes.
 S = 1;
+
+data_distribution = DataDistribution.Uniform;
+shift_operator = ShiftOperator.Laplacian;
 
 % Number of nodes.
 if exist('num_nodes', 'var')
@@ -24,9 +26,16 @@ for i = 1:numGraphs
   assert(issymmetric(model.G(i).W))
   assert(issymmetric(model.G(i).L))
 
-  [model.G(i).V, model.G(i).D] = eig(model.G(i).W);
+  switch shift_operator
+  case ShiftOperator.Adjacency
+    model.G(i).S = model.G(i).W;
+  case ShiftOperator.Laplacian
+    model.G(i).S = model.G(i).L;
+  end
+
+  [model.G(i).V, Lambda] = eig(model.G(i).S);
   model.G(i).U = inv(model.G(i).V);
-  model.G(i).lambda = diag(model.G(i).D);
+  model.G(i).lambda = diag(Lambda);
 end
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
@@ -52,7 +61,7 @@ H = zeros(N, N * numGraphs);
 for i = 1:numGraphs
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
-    Hi = Hi + truth.h(l+1, i)*model.G(i).W^l;
+    Hi = Hi + truth.h(l+1, i)*model.G(i).S^l;
   end
 
   H(:, N*(i-1)+1:N*i) = Hi;
