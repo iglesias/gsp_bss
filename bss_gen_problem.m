@@ -77,7 +77,7 @@ if numFilters > 2
 end
 
 for i = 1:numFilters
-  truth.h(:, i) = truth.h(:, i) / norm(truth.h(:, i), 1);
+  truth.h(:, i) = truth.h(:, i) / norm(truth.h(:, i));
 end
 
 model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
@@ -142,7 +142,7 @@ end
 
 % Normalize input signals.
 for i = 1:numFilters
-  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i));
+  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i), 1);
 end
 
 for i = 1:numFilters-1

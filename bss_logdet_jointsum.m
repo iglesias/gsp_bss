@@ -41,7 +41,7 @@ while (flag == 1 && iter <= max_iter)
     variable Kappa(L, L) symmetric;
 
     pho = 1;
-    tau = 0.5;
+    tau = 0.25;
     minimize(pho*(trace((Theta_old + epsilon_rank*eye(N))\Theta) + ...
                   trace((Kappa_old + epsilon_rank*eye(L))\Kappa)) + ...
              tau*wx'*norms(Z, 2, 2));

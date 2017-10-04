@@ -1,6 +1,8 @@
-N = 50;
+function play_bss_logdet_svd
+
+N = 100;
 verbose_bss_logdet = false;
-NUM_NODES = [50];
+NUM_NODES = [20 40 60 80 100];
 TIME = zeros(1, length(NUM_NODES));
 SUCCESS = zeros(1, length(NUM_NODES));
 
@@ -8,8 +10,9 @@ for m = 1:length(NUM_NODES)
   tic
   success = zeros(N, 1);
   iters_to_solve = inf(N, 1);
+  recovery_performance = zeros(N, 1);
 
-  ppm = ParforProgMon(sprintf('num_nodes=%d ', NUM_NODES(m)), N);
+%  ppm = ParforProgMon(sprintf('num_nodes=%d ', NUM_NODES(m)), N);
   parfor n = 1:N
     [truth, model, y] = bss_gen_problem(NUM_NODES(m));
     [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
@@ -21,17 +24,23 @@ for m = 1:length(NUM_NODES)
       Z_hat(:, :, i) = SZ(i,i)*UZ(:,i)*VZ(:,i)';
     end
 
-    if recovery_assessment_perms(truth.Z, Z_hat) < 1e-3
+    recovery_performance(n) = recovery_assessment_perms(truth.Z, Z_hat);
+    if recovery_performance(n) < 1e-3
       success(n) = 1;
       iters_to_solve(n) = iter;
     end
-    ppm.increment();
+%    ppm.increment();
   end
 
   SUCCESS(m) = sum(success)/N;
   TIME(m) = toc;
+
+  save(sprintf('play_bss_logdet_svd_num_nodes=%d_S6_L3_F2', NUM_NODES(m)))
+  fprintf('num_nodes=%d done!\n', NUM_NODES(m))
 end
 
 display(NUM_NODES)
 display(SUCCESS)
 display(TIME)
+
+end
