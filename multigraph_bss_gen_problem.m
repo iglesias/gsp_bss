@@ -1,20 +1,37 @@
-function [truth, model, y] = multigraph_bss_gen_problem(num_nodes)
+function [truth, model, y] = multigraph_bss_gen_problem(params)
 
-numGraphs = 2;
-% Number of filter coefficients.
-L = 2;
-% Number of non-zero input nodes.
-S = 1;
+if ~exist('params', 'var')
+  params = struct;
+end
 
-data_distribution = DataDistribution.Uniform;
-shift_operator = ShiftOperator.Adjacency;
+if isfield(params, 'numGraphs')
+  numGraphs = params.numGraphs;
+else
+  numGraphs = 2;
+end
+
+if isfield(params, 'L')
+  L = params.L;
+else
+  L = 2;
+end
 
 % Number of nodes.
-if exist('num_nodes', 'var')
-  N = num_nodes;
+if isfield(params, 'N')
+  N = params.N;
 else
   N = 50;
 end
+
+% Number of non-zero input nodes.
+if isfield(params, 'S')
+  S = params.S;
+else
+  S = 1;
+end
+
+data_distribution = DataDistribution.Uniform;
+shift_operator = ShiftOperator.Adjacency;
 
 % Edge existence probability.
 p = 0.1;
