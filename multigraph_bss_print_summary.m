@@ -6,7 +6,7 @@ numGraphs = size(Z_hat, 3);
 
 y_hat = 0;
 for i = 1:numGraphs
-  y_hat = model.G(i).V*model.A{i}*vec(Z_hat(:, :, i));
+  y_hat = y_hat + model.G(i).V*model.A{i}*vec(Z_hat(:, :, i));
 end
 
 fprintf('\n\n')
