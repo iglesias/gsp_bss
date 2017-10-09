@@ -7,5 +7,7 @@
 
 *.mat
 
-data/
+data/*
+!data/brain_data_66.mat
+
 figures/
