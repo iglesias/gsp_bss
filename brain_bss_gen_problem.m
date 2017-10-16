@@ -1,19 +1,47 @@
-function  [truth, model, y] = brain_bss_gen_problem(brain_idxs)
+function  [truth, model, y] = brain_bss_gen_problem(params)
 
-assert(length(brain_idxs) > 0)
+load('data/brain_data_66', 'CC')
+assert(size(CC, 1) == size(CC, 2))
+% Number of nodes.
+N = size(CC, 2);
+
+if ~exist('params', 'var')
+  params = struct;
+end
+
+if isfield(params, 'brain_idxs')
+  brain_idxs = params.brain_idxs;
+else
+  if isfield(params, 'numGraphs')
+    if params.numGraphs > size(CC, 3)
+      error('Maximum number of graphs is %d (%d provided)', size(CC, 3), ...
+            params.numGraphs);
+    end
+
+    brain_idxs = randperm(size(CC, 3), params.numGraphs);
+  else
+    brain_idxs = randperm(size(CC, 3), 2);
+  end
+end
 
 numGraphs = length(brain_idxs);
-numFilters = numGraphs;
-% Number of non-zero input nodes.
-S = 1;
+
 % Order of the filters (number of filter coefficients).
-L = 3;
+if isfield(params, 'L')
+  L = params.L;
+else
+  L = 2;
+end
+
+% Number of non-zero input nodes.
+if isfield(params, 'S')
+  S = params.S;
+else
+  S = 1;
+end
 
 data_distribution = DataDistribution.Uniform;
 shift_operator = ShiftOperator.Adjacency;
-
-load('data/brain_data_66', 'CC')
-N = 66;
 
 for i = 1:numGraphs
   % Adjacency matrix.
@@ -39,7 +67,7 @@ end
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
 % Filter coefficients.
-truth.h = zeros(L, numFilters);
+truth.h = zeros(L, numGraphs);
 
 switch data_distribution
 case DataDistribution.Normal
@@ -57,8 +85,8 @@ for i = 1:numGraphs
 end
 
 % Build filter matrices.
-H = zeros(N, N * numFilters);
-for i = 1:numFilters
+H = zeros(N, N * numGraphs);
+for i = 1:numGraphs
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
     Hi = Hi + truth.h(l+1, i)*model.G(i).S^l;
