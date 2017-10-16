@@ -6,6 +6,8 @@ numGraphs = length(brain_idxs);
 numFilters = numGraphs;
 % Number of non-zero input nodes.
 S = 1;
+% Order of the filters (number of filter coefficients).
+L = 3;
 
 data_distribution = DataDistribution.Uniform;
 shift_operator = ShiftOperator.Adjacency;
@@ -37,48 +39,21 @@ end
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
 % Filter coefficients.
-% Order of the filters (number of filter coefficients).
-L = 3;
 truth.h = zeros(L, numFilters);
-% Because of the way we are coming up with orthogonal vectors,
-% which is fixed to three-dimensional vectors.
-assert(L == 3)
-% Because we are using three-dimensional vectors for the
-% filter coefficients and they must be mutually orthogonal.
-assert(2 <= numFilters && numFilters <= 3)
 
 switch data_distribution
 case DataDistribution.Normal
-  truth.h(:, 1) = randn(L, 1);
-
-  truth.h([1 2], 2) = randn(2, 1);
-
-  if numFilters > 2
-    truth.h(1, 3) = randn;
-  end
+  truth.h = randn(L, numGraphs);
+  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 
 case DataDistribution.Uniform
-  truth.h(:, 1) = rand(L, 1);
-
-  truth.h([1 2], 2) = rand(2, 1);
-
-  if numFilters > 2
-    truth.h(1, 3) = rand;
-  end
-end
-
-truth.h(3, 2) = - (truth.h([1 2], 1)' * truth.h([1 2], 2)) / truth.h(3, 1);
-if numFilters > 2
-  truth.h([2 3], 3) = [truth.h([2 3], 1)'; truth.h([2 3], 2)'] \ ...
-                      (-truth.h(1, 3) * [truth.h(1,1); truth.h(1,2)]);
-end
-
-for i = 1:numFilters
-  truth.h(:, i) = truth.h(:, i) / norm(truth.h(:, i));
+  truth.h = rand(L, numGraphs);
+  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 end
 
 for i = 1:numGraphs
   model.Psi{i} = repmat(model.G(i).lambda, 1, L).^repmat([0:L-1], N, 1);
+  % disp(minmax(vec(model.Psi{i})'))
 end
 
 % Build filter matrices.
@@ -94,49 +69,24 @@ end
 
 % Input.
 
-truth.xSupport = zeros(numFilters, S);
-while true
-  for i = 1:numFilters
-    truth.xSupport(i, :) = randperm(N, S);
-  end
-
-  empty_intersection = true;
-  for i = 1:numFilters-1
-    for j = i+1:numFilters
-      if ~isempty(intersect(truth.xSupport(i, :), truth.xSupport(j, :)))
-        empty_intersection = false;
-      end
-    end
-  end
-
-  if empty_intersection
-    break
-  end
+truth.xSupport = zeros(numGraphs, S);
+for i = 1:numGraphs
+  truth.xSupport(i, :) = randperm(N, S);
 end
 
-truth.x = zeros(N, numFilters);
+truth.x = zeros(N, numGraphs);
 
 switch data_distribution
 case DataDistribution.Normal
-  for i = 1:numFilters
+  for i = 1:numGraphs
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
+    truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 
 case DataDistribution.Uniform
-  for i = 1:numFilters
+  for i = 1:numGraphs
     truth.x(truth.xSupport(i, :), i) = rand(S, 1);
-  end
-end
-
-% Normalize input signals.
-for i = 1:numFilters
-  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i), 1);
-end
-
-for i = 1:numFilters-1
-  for j = i+1:numFilters
-    assert(truth.x(:, i)' * truth.x(:, j) == 0)
-    assert(abs(truth.h(:, i)' * truth.h(:, j)) < 1e-10)
+    truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 end
 
