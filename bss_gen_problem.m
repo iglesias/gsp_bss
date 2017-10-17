@@ -4,7 +4,7 @@ numFilters = 3;
 % Number of non-zero input nodes.
 S = 3;
 
-data_distibution = DataDistribution.Uniform;
+data_distribution = DataDistribution.Uniform;
 shift_operator = ShiftOperator.Adjacency;
 
 % Number of nodes.
@@ -50,7 +50,7 @@ assert(L == 3)
 % filter coefficients and they must be mutually orthogonal.
 assert(2 <= numFilters && numFilters <= 3)
 
-switch data_distibution
+switch data_distribution
 case DataDistribution.Normal
   truth.h(:, 1) = randn(L, 1);
 
@@ -128,7 +128,7 @@ end
 
 truth.x = zeros(N, numFilters);
 
-switch data_distibution
+switch data_distribution
 case DataDistribution.Normal
   for i = 1:numFilters
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
