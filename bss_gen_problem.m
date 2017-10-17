@@ -1,18 +1,38 @@
-function  [truth, model, y] = bss_gen_problem(num_nodes)
+function  [truth, model, y] = bss_gen_problem(params)
 
-numFilters = 3;
-% Number of non-zero input nodes.
-S = 3;
+if ~exist('params', 'var')
+  params = struct;
+end
 
-data_distribution = DataDistribution.Uniform;
-shift_operator = ShiftOperator.Adjacency;
+if isfield(params, 'numFilters')
+  numFilters = params.numFilters;
+else
+  numFilters = 2;
+end
+
+% Order of the filters (number of filter coefficients).
+if isfield(params, 'L')
+  L = params.L;
+else
+  L = 2;
+end
 
 % Number of nodes.
-if exist('num_nodes', 'var')
-  N = num_nodes;
+if isfield(params, 'N')
+  N = params.N;
 else
   N = 50;
 end
+
+% Number of non-zero input nodes.
+if isfield(params, 'S')
+  S = params.S;
+else
+  S = 1;
+end
+
+data_distribution = DataDistribution.Normal;
+shift_operator = ShiftOperator.Adjacency;
 
 % Edge existence probability.
 p = 0.1;
@@ -31,12 +51,7 @@ case ShiftOperator.Laplacian
   model.G.S = model.G.L;
 end
 
-%figure
-%matlabGraph = graph(G.W);
-%plot(matlabGraph)
-
-[model.G.V, Lambda] = eig(model.G.S);
-model.G.U = inv(model.G.V);
+[model.G.V, Lambda, model.G.U] = eig(model.G.S);
 model.G.lambda = diag(Lambda);
 
 % Filter coefficients.
@@ -81,17 +96,6 @@ for i = 1:numFilters
 end
 
 model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
-% invPsi = pinv(model.Psi);
-
-% assert(mod(N, numFilters) == 0)
-% h1_tilde = [rand(2, 1); zeros(N-2, 1)];
-% h2_tilde = [zeros(N-2, 1); rand(2, 1)];
-%
-% truth.h1 = invPsi*h1_tilde;
-% truth.h2 = invPsi*h2_tilde;
-%
-% truth.h1 = truth.h1 / norm(truth.h1, 1);
-% truth.h2 = truth.h2 / norm(truth.h2, 1);
 
 % Build filter matrices.
 H = zeros(N, N * numFilters);
@@ -161,10 +165,5 @@ for i = 1:numFilters
   truth.Z{i} = truth.x(:, i)*truth.h(:, i)';
   truth.Zsum = truth.Zsum + truth.Z{i};
 end
-
-% [UZPsi, SZPsi, VZPsi] = svd((truth.Z1 + truth.Z2)*model.Psi');
-% diag(SZPsi)'
-% norm(SZPsi(1,1)*UZPsi(:,1)*VZPsi(:,1)' - truth.x1 * (model.Psi*truth.h1)')
-% norm(SZPsi(2,2)*UZPsi(:,2)*VZPsi(:,2)' - truth.x2 * (model.Psi*truth.h2)')
 
 end
