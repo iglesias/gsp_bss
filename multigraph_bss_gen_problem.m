@@ -39,9 +39,11 @@ p = 0.1;
 for i = 1:numGraphs
   if i == 1
     model.G(i).W = generate_connected_ER(N, p);
-
     model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
-    [model.G(i).V, model.G(i).D] = eig(model.G(i).L);
+
+    model.G(i).S = model.G(i).W;
+
+    [model.G(i).V, model.G(i).D] = eig(model.G(i).S);
     model.G(i).U = inv(model.G(i).V);
     model.G(i).lambda = diag(model.G(i).D);
   else
@@ -53,12 +55,16 @@ for i = 1:numGraphs
       model.G(i).W = model.G(i).W + model.G(i).W';
 
       model.G(i).L = diag(sum(model.G(i).W))-model.G(i).W;
-      [model.G(i).V, model.G(i).D] = eig(model.G(i).L);
+
+      model.G(i).S = model.G(i).W;
+
+      [model.G(i).V, model.G(i).D] = eig(model.G(i).S);
       model.G(i).U = inv(model.G(i).V);
       model.G(i).lambda = diag(model.G(i).D);
 
       % Make sure the graph has one connected component.
-      if sum(abs(model.G(i).lambda) <= 1e-6) == 1
+      [~, Lambda] = eig(model.G(i).L);
+      if sum(diag(abs(Lambda)) <= 1e-6) == 1
         break
       end
     end
