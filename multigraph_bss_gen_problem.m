@@ -10,6 +10,7 @@ else
   numGraphs = 2;
 end
 
+% Order of the filters (number of filter coefficients).
 if isfield(params, 'L')
   L = params.L;
 else

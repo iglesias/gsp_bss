@@ -27,7 +27,7 @@ for S = SS
     parfor n = 1:num_simulations
       [truth, model, y] = multigraph_bss_gen_problem(params);
       [Z_hat, iter] = multigraph_bss_logdet(y, model.A, model.V, ...
-                                    verbose_multigraph_bss_logdet);
+                                            verbose_multigraph_bss_logdet);
 
       recovery_performance(n) = recovery_assessment(truth.Z, Z_hat);
       if recovery_performance(n) < 1e-3
@@ -39,10 +39,11 @@ for S = SS
 
     time = toc;
     success_percent = sum(success)/num_simulations;
-    fprintf('S%d numGraphs%d: success=%d time=%d\n', S, numGraphs, success_percent, time)
+    fprintf('S%d numGraphs%d: success=%d time=%d\n', S, numGraphs, ...
+            success_percent, time)
 
-    save(sprintf('play_multigraph_bss_logdet_N%d_S%d_L%d_numGraphs%d', params.N, ...
-         params.S, params.L, params.numGraphs));
+    save(sprintf('play_multigraph_bss_logdet_N%d_S%d_L%d_numGraphs%d', ...
+                 params.N, params.S, params.L, params.numGraphs));
   end
 end
 
