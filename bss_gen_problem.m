@@ -7,14 +7,14 @@ end
 if isfield(params, 'numFilters')
   numFilters = params.numFilters;
 else
-  numFilters = 2;
+  numFilters = 3;
 end
 
 % Order of the filters (number of filter coefficients).
 if isfield(params, 'L')
   L = params.L;
 else
-  L = 2;
+  L = 3;
 end
 
 % Number of nodes.
@@ -28,7 +28,7 @@ end
 if isfield(params, 'S')
   S = params.S;
 else
-  S = 1;
+  S = 3;
 end
 
 data_distribution = DataDistribution.Normal;
