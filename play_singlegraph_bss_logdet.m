@@ -1,4 +1,4 @@
-function play_bss_logdet_svd
+function play_singlegraph_bss_logdet
 
 num_simulations = 1000;
 verbose_bss_logdet = false;
@@ -20,7 +20,7 @@ for N = NN, for S = SS, for numFilters = NUM_FILTERS
   params.numFilters = numFilters;
 
   parfor n = 1:num_simulations
-    [truth, model, y] = bss_gen_problem(params);
+    [truth, model, y] = singlegraph_bss_gen_problem(params);
     [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
 
     [UZ, SZ, VZ] = svd(Zsum_hat, 'econ');
@@ -42,7 +42,7 @@ for N = NN, for S = SS, for numFilters = NUM_FILTERS
           params.N, params.S, params.L, params.numFilters, ...
           success_percent, time)
 
-  save(sprintf('play_bss_logdet_svd_N%d_S%d_L%d_numFilters%d', ...
+  save(sprintf('play_singlegraph_bss_logdet_N%d_S%d_L%d_numFilters%d', ...
                params.N, params.S, params.L, params.numFilters));
 end, end, end
 

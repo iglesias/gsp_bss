@@ -4,7 +4,7 @@ verbose_bss_logdet = false;
 verbose_self = true;
 do_plot = false;
 
-[truth, model, y] = bss_gen_problem;
+[truth, model, y] = singlegraph_bss_gen_problem;
 [Z1_hat, Z2_hat] = bss_logdet(y, model.A, model.G.V, verbose_bss_logdet);
 
 if verbose_self
@@ -12,7 +12,7 @@ if verbose_self
 end
 
 if do_plot
-  bss_plot_results(truth.Z1, truth.Z2, Z1_hat, Z2_hat);
+  bss_plot_results(truth.Z{1}, truth.Z{2}, Z1_hat, Z2_hat);
 end
 
 end

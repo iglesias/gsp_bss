@@ -1,4 +1,4 @@
-function bss_svd_print_summary(Z_hat, truth, model, y)
+function singlegraph_bss_print_summary(Z_hat, truth, model, y)
 
 svd_fmt_str = prepare_svd_fmt_str(size(Z_hat, 2));
 
