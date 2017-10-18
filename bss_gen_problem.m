@@ -55,8 +55,6 @@ end
 model.G.lambda = diag(Lambda);
 
 % Filter coefficients.
-% Order of the filters (number of filter coefficients).
-L = 3;
 truth.h = zeros(L, numFilters);
 % Because of the way we are coming up with orthogonal vectors,
 % which is fixed to three-dimensional vectors.
@@ -158,7 +156,7 @@ end
 
 y = H*truth.x(:);
 
-model.A = kr(model.Psi', model.G.U')';
+model.A = kr(model.Psi', model.G.U)';
 
 truth.Zsum = zeros(N, L);
 for i = 1:numFilters
