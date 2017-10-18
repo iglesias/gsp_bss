@@ -8,7 +8,7 @@ end
 
 epsilon_rank = 5e-2;
 epsilon_normx = 1e-3;
-max_iter = 50;
+max_iter = 30;
 
 %% Blind source separation using rank mininimization: log-det surrogate
 
@@ -41,7 +41,7 @@ while (flag == 1 && iter <= max_iter)
     variable Kappa(L, L) symmetric;
 
     pho = 1;
-    tau = 0.25;
+    tau = 0.5;
     minimize(pho*(trace((Theta_old + epsilon_rank*eye(N))\Theta) + ...
                   trace((Kappa_old + epsilon_rank*eye(L))\Kappa)) + ...
              tau*wx'*norms(Z, 2, 2));
