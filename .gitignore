@@ -7,5 +7,9 @@
 
 *.mat
 
-data/
+data/*
+!data/brain_data_66.mat
+
 figures/
+
+!experiment_brain_bss_logdet/play_brain_bss_logdet_S*_L*_numGraphs*.mat
