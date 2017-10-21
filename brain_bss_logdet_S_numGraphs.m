@@ -4,12 +4,12 @@ function brain_bss_logdet_S_numGraphs
 % https://github.com/DylanMuir/ParforProgMon
 % addpath ~/workspace/matlab/DylanMuir-ParforProgMon-9a1c257/
 
-num_simulations = 100;
+num_simulations = 1000;
 verbose_multigraph_bss_logdet = false;
 
 params.L = 3;
 
-NUM_GRAPHS = [2 3 4 5];
+NUM_GRAPHS = [2 3 4 5 6];
 SS = [1 2 3 4 5];
 
 for S = SS

@@ -40,7 +40,7 @@ else
   S = 1;
 end
 
-data_distribution = DataDistribution.Uniform;
+data_distribution = DataDistribution.Normal;
 shift_operator = ShiftOperator.Adjacency;
 
 for i = 1:numGraphs
