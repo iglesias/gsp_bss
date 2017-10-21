@@ -19,6 +19,7 @@ yticks(NUM_GRAPHS-1)
 yticklabels(NUM_GRAPHS)
 xlabel('S')
 ylabel('Number of graphs')
+caxis([0 1])
 colormap gray
 colorbar
 title('Rate of successful recovery with L=3 and N=100')
