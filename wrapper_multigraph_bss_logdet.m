@@ -3,10 +3,11 @@ function wrapper_multigraph_bss_logdet
 verbose_multigraph_bss_logdet = true;
 verbose_self = true;
 
-params.numGraphs = 5;
+params.numGraphs = 2;
+params.coupling = 0;
+params.N = 50;
 params.L = 3;
-params.N = 100;
-%params.S = 5;
+params.S = 1;
 
 [truth, model, y] = multigraph_bss_gen_problem(params);
 Z_hat = multigraph_bss_logdet(y, model.A, model.V, ...

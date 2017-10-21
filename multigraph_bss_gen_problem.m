@@ -31,6 +31,15 @@ else
   S = 1;
 end
 
+if isfield(params, 'coupling')
+  if params.coupling < 0 || params.coupling > 1
+    error('Invalid coupling (%d). It must be between 0 and 1', params.coupling)
+  end
+  coupling = params.coupling;
+else
+  coupling = 0.15;
+end
+
 data_distribution = DataDistribution.Uniform;
 shift_operator = ShiftOperator.Adjacency;
 
@@ -49,7 +58,7 @@ for i = 1:numGraphs
   else
     while true
       model.G(i).W = model.G(i-1).W;
-      idxs_to_change = randperm(N*N, round(0.85*N*N));
+      idxs_to_change = randperm(N*N, round((1-coupling)*N*N));
       model.G(i).W(idxs_to_change) = rand(1, length(idxs_to_change)) < p;
       model.G(i).W = triu(model.G(i).W, 1);
       model.G(i).W = model.G(i).W + model.G(i).W';
@@ -78,7 +87,7 @@ end
 % above. For instance, if the graphs are completely independent (just two ER generated
 % independently), we get only around 0.17 (ideally we would like to have a number like
 % 1 meaning completely dissimilar).
-fprintf('Graph dissimilarity: %.4f\n', sum(sum(abs(model.G(1).W - model.G(2).W)))/(N*N))
+% fprintf('Graph dissimilarity: %.4f\n', sum(sum(abs(model.G(1).W - model.G(2).W)))/(N*N))
 
 model.V = reshape([model.G.V], [N, N, numGraphs]);
 
