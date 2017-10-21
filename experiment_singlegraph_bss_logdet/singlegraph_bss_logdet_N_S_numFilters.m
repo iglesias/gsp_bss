@@ -1,4 +1,4 @@
-function play_singlegraph_bss_logdet
+function singlegraph_bss_logdet_N_S_numFilters
 
 num_simulations = 1000;
 verbose_bss_logdet = false;

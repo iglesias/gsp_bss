@@ -13,3 +13,4 @@ data/*
 figures/
 
 !experiment_brain_bss_logdet/play_brain_bss_logdet_S*_L*_numGraphs*.mat
+!experiment_singlegraph_bss_logdet/play_singlegraph_bss_logdet_N*_S*_L*_numFilters*.mat
