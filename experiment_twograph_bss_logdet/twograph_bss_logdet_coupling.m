@@ -4,15 +4,15 @@ function twograph_bss_logdet_coupling
 % https://github.com/DylanMuir/ParforProgMon
 % addpath ~/workspace/matlab/DylanMuir-ParforProgMon-9a1c257/
 
-num_simulations = 100;
+num_simulations = 1000;
 verbose_multigraph_bss_logdet = false;
 
 params.numGraphs = 2;
 
-COUPLING = [0.0 0.2 0.4 0.6 0.8 1.0];
-NN = [50];
+COUPLING = [0.0 0.4 0.7 0.9 0.95 1.0];
+NN = [50 100];
 LL = [3];
-SS = [1];
+SS = [1 3];
 
 for coupling = COUPLING, for N = NN, for L = LL, for S = SS
   tic
