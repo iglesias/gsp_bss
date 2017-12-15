@@ -23,7 +23,7 @@ cvx_begin quiet
   tau = 0.5;
   objective = 0;
   for i = 1:numGraphs
-    objective = objective + pho*norm_nuc(Z(:, :, i)) + tau*sum(norms(Z(:, :, i), 1, 2));
+    objective = objective + pho*norm_nuc(Z(:, :, i)) + tau*sum(norms(Z(:, :, i), 2, 2));
   end
 
   minimize(objective);
@@ -44,7 +44,7 @@ if verbose
   b = 0;
   for i = 1:numGraphs
     a = a + pho*norm_nuc(Z(:, :, i));
-    b = b + tau*sum(norms(Z(:, :, i), 1, 2));
+    b = b + tau*sum(norms(Z(:, :, i), 2, 2));
   end
   fprintf('%d %d\n', a, b)
 
