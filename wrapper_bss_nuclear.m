@@ -4,7 +4,7 @@ verbose_bss_nuclear = true;
 verbose_self = true;
 do_plot = true;
 
-[truth, model, y] = singlegraph_bss_gen_problem;
+[truth, model, y] = singlegraph_svd_bss_gen_problem;
 [Z1_hat, Z2_hat] = bss_nuclear(y, model.A, model.G.V, verbose_bss_nuclear);
 
 if verbose_self

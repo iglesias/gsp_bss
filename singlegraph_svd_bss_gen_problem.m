@@ -1,4 +1,4 @@
-function  [truth, model, y] = singlegraph_bss_gen_problem(params)
+function [truth, model, y] = singlegraph_svd_bss_gen_problem(params)
 
 if ~exist('params', 'var')
   params = struct;
