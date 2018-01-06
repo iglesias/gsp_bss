@@ -15,8 +15,6 @@ params.S = 3;
 
 if verbose_self
   plot_Zs(truth.Z, Z_hat)
-  % TODO the following internally does permutations, which should not
-  % be needed in this case.
   singlegraph_bss_print_summary(Z_hat, truth, model, y);
 end
 

@@ -14,7 +14,8 @@ for i = 1:numFilters
 end
 
 if verbose_self
-  singlegraph_bss_print_summary(Z_hat, truth, model, y);
+  do_perms = true;
+  singlegraph_bss_print_summary(Z_hat, truth, model, y, do_perms);
 end
 
 end
