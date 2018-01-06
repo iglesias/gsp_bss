@@ -2,17 +2,21 @@ function wrapper_bss_logdet
 
 verbose_bss_logdet = false;
 verbose_self = true;
-do_plot = false;
+do_plot = true;
 
-[truth, model, y] = singlegraph_svd_bss_gen_problem;
+params.numFilters = 2;
+
+[truth, model, y] = singlegraph_svd_bss_gen_problem(params);
 [Z1_hat, Z2_hat] = bss_logdet(y, model.A, model.G.V, verbose_bss_logdet);
+Z_hat = cat(3, Z1_hat, Z2_hat);
 
 if verbose_self
-  bss_print_summary(Z1_hat, Z2_hat, truth, model, y);
+  do_perms = true;
+  singlegraph_bss_print_summary(Z_hat, truth, model, y, do_perms);
 end
 
 if do_plot
-  bss_plot_results(truth.Z{1}, truth.Z{2}, Z1_hat, Z2_hat);
+  plot_Zs(truth.Z, Z_hat)
 end
 
 end
