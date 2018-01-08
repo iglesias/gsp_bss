@@ -1,4 +1,13 @@
-function [Z_hat, iter] = singlegraph_bss_logdet_knownx(x, y, A, V, verbose)
+function [Z_hat, iter] = singlegraph_bss_logdet_knownx(x, y, A, V, known_ratio, verbose)
+
+if ~exist('known_ratio', 'var')
+  known_ratio = 0.5;
+else
+  if ~isreal(known_ratio) || ~isscalar(known_ratio) || ...
+      known_ratio < 0 || known_ratio > 1
+    error('known_ratio must be a scalar between 0 and 1.')
+  end
+end
 
 if ~exist('verbose', 'var')
   verbose = false;
@@ -21,8 +30,7 @@ numFilters = size(x, 2);
 
 %% Set up known values of the inputs.
 
-known_percentage = 0.5;
-num_known = round(known_percentage*N);
+num_known = round(known_ratio*N);
 [nonzero_idxs, zero_idxs] = separate_known_idxs(x, num_known);
 
 %% Optimization.
@@ -70,6 +78,7 @@ while (flag == 1 && iter <= max_iter)
 
       for i = 1:numFilters
         Z(zero_idxs{i}, :, i) == 0;
+
         for j = 1:length(nonzero_idxs{i})
           for k = j+1:length(nonzero_idxs{i})
             jidx = nonzero_idxs{i}(j);

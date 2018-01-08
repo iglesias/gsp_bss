@@ -10,8 +10,10 @@ params.N = 50;
 params.S = 3;
 
 [truth, model, y] = singlegraph_bss_gen_problem(params);
-[Z_hat, iter] = ...
-  singlegraph_bss_logdet_knownx(truth.x, y, model.A, model.G.V, verbose_optimizer);
+
+known_ratio = 1;
+[Z_hat, iter] = singlegraph_bss_logdet_knownx(truth.x, y, model.A, model.G.V, ...
+                                              known_ratio, verbose_optimizer);
 
 if verbose_self
   plot_Zs(truth.Z, Z_hat)
