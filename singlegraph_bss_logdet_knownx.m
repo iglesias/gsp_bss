@@ -155,9 +155,19 @@ end
 function [nonzero_idxs, zero_idxs] = separate_known_idxs(x, num_known)
 
 [N, P] = size(x);
-known_idxs = zeros(num_known, P);
+
 nonzero_idxs = cell(P, 1);
 zero_idxs = cell(P, 1);
+
+if num_known == 0
+  return
+end
+
+if num_known > N
+  error('The number of known input values cannot be larger than the signal dimension.')
+end
+
+known_idxs = zeros(num_known, P);
 for i = 1:P
   known_idxs(:, i) = sort(randperm(N, num_known));
   nonzero_idxs{i} = known_idxs(find(x(known_idxs(:, i), i)), i);
