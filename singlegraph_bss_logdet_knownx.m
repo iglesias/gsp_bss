@@ -1,4 +1,4 @@
-function [Z_hat, iter] = singlegraph_bss_logdet_knownx(x, y, A, V, known_ratio, verbose)
+function [Z_hat, iter, nonzero_idxs, zero_idxs] = singlegraph_bss_logdet_knownx(x, y, A, V, known_ratio, verbose)
 
 if ~exist('known_ratio', 'var')
   known_ratio = 0.5;

@@ -1,4 +1,7 @@
 function v = recovery_assesment(Z, Z_hat)
+%RECOVERY_ASSESMENT
+%   v = recovery_assesment(Z, Z_hat)
+%
 
 assert(length(Z) == size(Z_hat, 3))
 
