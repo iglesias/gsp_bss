@@ -12,8 +12,6 @@ y_hat = model.G.V*model.A*vec(sum(Z_hat, 3));
 
 fprintf('\n\n')
 fprintf('Equality constraint test: %d\n', norm(y - y_hat))
-fprintf('norm(Z-Z_hat)=%d\n', norm(truth.Zsum - sum(Z_hat, 3), 'fro') / ...
-                              norm(truth.Zsum, 'fro'));
 
 for i = 1:P
   fprintf('norm(Z%d_hat-Z%d)=%d\n', i, i, norm(Z_hat(:, :, i) - truth.Z{i}))
@@ -35,6 +33,8 @@ else
 end
 
 fprintf('Recovery assessment: %d\n', perf);
+fprintf('Recovery assessment sum: %d\n', ...
+        norm(truth.Zsum - sum(Z_hat, 3), 'fro') / norm(truth.Zsum, 'fro'));
 
 fprintf('\n\n')
 
