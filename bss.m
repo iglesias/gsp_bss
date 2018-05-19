@@ -1,4 +1,4 @@
-function bss(epsilon, taux, tauh, verbose)
+function bss(alpha, taux, tauh, verbose)
 
 if nargin < 2 
   taux = 1e-1;
@@ -75,7 +75,7 @@ x2(x2Support) = rand(S, 1);
 x = [x1; x2];
 y = H*x;
 
-knownSupportFlag = false;
+knownSupportFlag = true;
 
 if knownSupportFlag
   % Known support equal for all inputs
@@ -97,6 +97,7 @@ Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
 
 %save(sprintf('data/epsilon/bss_nuclear_epsilon=%.0d_10_01_%s', epsilon, randomstring(20)))
+%save(sprintf('data/alpha/bss_nuclear_alpha=%.2f_10_01_%s', alpha, randomstring(20)))
 
 %[Uz1, Sz1, Vz1] = svd(Z1');
 %h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
@@ -106,17 +107,7 @@ Z2 = x2(xSupportToEstimate)*hHP';
 
 if verbose
   bss_print_summary
-
-  cminmax = minmax([Z1(:); Z2(:); Z1_hat(:); Z2_hat(:)]);
-
-  subplot(221)
-  imagesc(Z1, cminmax), title('Z1')
-  subplot(222)
-  imagesc(Z2, cminmax), title('Z2')
-  subplot(223)
-  imagesc(Z1_hat, cminmax), title('Z1\_hat')
-  subplot(224)
-  imagesc(Z2_hat, cminmax), title('Z2\_hat')
+  bss_plot_results
 end
 
 end
