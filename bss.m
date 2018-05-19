@@ -64,6 +64,8 @@ S = 5;
 x1Support = randperm(N, S);
 x2Support = randperm(N, S);
 
+intersect(x1Support, x2Support)
+
 x1 = zeros(N, 1);
 x1(x1Support) = rand(S, 1);
 
@@ -73,7 +75,7 @@ x2(x2Support) = rand(S, 1);
 x = [x1; x2];
 y = H*x;
 
-knownSupportFlag = false;
+knownSupportFlag = true;
 
 if knownSupportFlag
   % Known support equal for all inputs
@@ -86,19 +88,22 @@ else
   xSupportToEstimate = 1:N;
 end
 
-sparse_bss_verbose = false;
-[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, alpha, taux, tauh, sparse_bss_verbose, knownSupportFlag);
+sparse_bss_verbose = true;
+[Z1_hat, Z2_hat] = sparse_bss_nuclear(y, A, V, epsilon, taux, tauh, sparse_bss_verbose, knownSupportFlag);
 %[Z1_hat, Z2_hat] = sparse_bss_logdet(y, A, V, taux, tauh, sparse_bss_verbose, knownSupportFlag);
 %[Z1_hat, Z2_hat] = sparse_bss_logdet_jointsum(y, A, V, 1e-1, 0, sparse_bss_verbose, knownSupportFlag);
 
 Z1 = x1(xSupportToEstimate)*hLP';
 Z2 = x2(xSupportToEstimate)*hHP';
 
-save(sprintf('data/alpha/bss_nuclear_alpha=%.2f_10_01_%s', alpha, randomstring(20)))
+%save(sprintf('data/epsilon/bss_nuclear_epsilon=%.0d_10_01_%s', epsilon, randomstring(20)))
+%save(sprintf('data/alpha/bss_nuclear_alpha=%.2f_10_01_%s', alpha, randomstring(20)))
 
 %[Uz1, Sz1, Vz1] = svd(Z1');
 %h1FromZ1 = sqrt(Sz1(1,1))*Uz1(:,1);
 %x1FromZ1 = sqrt(Sz1(1,1))*Vz1(:,1);
+
+[Ur, Sr, Vr] = svd(Z1_hat+Z2_hat);
 
 if verbose
   bss_print_summary
