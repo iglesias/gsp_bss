@@ -18,8 +18,6 @@ for i = 1:length(files)
     subplot(224)
     imagesc(Z2_hat, cminmax), title('Z2\_hat')
 
-    clc
-    bss_print_summary
     pause(5)
 end
 

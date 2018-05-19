@@ -45,33 +45,33 @@ while (flag == 1 && iter <= max_iter)
   end
 
   cvx_begin quiet
-  variable Z(N, L, numGraphs);
-  variable Theta(N, N, numGraphs) symmetric;
-  variable Kappa(L, L, numGraphs) symmetric;
+    variable Z(N, L, numGraphs);
+    variable Theta(N, N, numGraphs) symmetric;
+    variable Kappa(L, L, numGraphs) symmetric;
 
-  pho = 1;
-  tau = 0.5;
-  objective = 0;
-  for i = 1:numGraphs
-    objective = objective + ...
-      pho*(trace((Theta_old(:, :, i) + epsilon_rank*eye(N))\Theta(:, :, i)) + ...
-      trace((Kappa_old(:, :, i) + epsilon_rank*eye(L))\Kappa(:, :, i))) + ...
-      tau*wx(:, i)'*norms(Z(:, :, i), 2, 2);
-  end
+    pho = 1;
+    tau = 0.5;
+    objective = 0;
+    for i = 1:numGraphs
+      objective = objective + ...
+        pho*(trace((Theta_old(:, :, i) + epsilon_rank*eye(N))\Theta(:, :, i)) + ...
+        trace((Kappa_old(:, :, i) + epsilon_rank*eye(L))\Kappa(:, :, i))) + ...
+        tau*wx(:, i)'*norms(Z(:, :, i), 2, 2);
+    end
 
-  minimize(objective);
+    minimize(objective);
 
-  subject to
-  for i = 1:numGraphs
-    [Theta(:, :, i) Z(:, :, i); Z(:, :, i)' Kappa(:, :, i)] == semidefinite(N+L);
-  end
+    subject to
+      for i = 1:numGraphs
+        [Theta(:, :, i) Z(:, :, i); Z(:, :, i)' Kappa(:, :, i)] == semidefinite(N+L);
+      end
 
-  eq_constraint = 0;
-  for i = 1:numGraphs
-    eq_constraint = eq_constraint + V(:, :, i)*A{i}*vec(Z(:, :, i));
-  end
+      eq_constraint = 0;
+      for i = 1:numGraphs
+        eq_constraint = eq_constraint + V(:, :, i)*A{i}*vec(Z(:, :, i));
+      end
 
-  y == eq_constraint;
+      y == eq_constraint;
   cvx_end
 
   if verbose

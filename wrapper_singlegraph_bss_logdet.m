@@ -3,7 +3,7 @@ function wrapper_singlegraph_bss_logdet
 verbose_bss_logdet = true;
 verbose_self = true;
 
-[truth, model, y] = singlegraph_bss_gen_problem;
+[truth, model, y] = singlegraph_svd_bss_gen_problem;
 [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
 
 [UZ, SZ, VZ] = svd(Zsum_hat, 'econ');
@@ -14,7 +14,8 @@ for i = 1:numFilters
 end
 
 if verbose_self
-  singlegraph_bss_print_summary(Z_hat, truth, model, y);
+  do_perms = true;
+  singlegraph_bss_print_summary(Z_hat, truth, model, y, do_perms);
 end
 
 end

@@ -78,13 +78,11 @@ while (flag == 1 && iter <= max_iter)
     return
   else
     if difference < 1e-4
-      % Converged.
       if verbose
         fprintf('Convergence reached, cvx_status: %s.\n', cvx_status)
       end
       flag = 0;
     else
-      % Did not converge.
       if verbose
         fprintf('Convergence NOT reached, difference=%d.\n', difference)
       end

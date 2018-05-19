@@ -1,11 +1,7 @@
-function [truth, model, y] = singlegraph_bss_gen_problem(params)
+function [truth, model, y] = singlegraph_svd_bss_gen_problem(params)
 
 if ~exist('params', 'var')
   params = struct;
-end
-
-if ~isfield(params, 'verbose')
-  params.verbose = false;
 end
 
 if isfield(params, 'numFilters')
@@ -18,7 +14,7 @@ end
 if isfield(params, 'L')
   L = params.L;
 else
-  L = 2;
+  L = 3;
 end
 
 % Number of nodes.
@@ -32,7 +28,7 @@ end
 if isfield(params, 'S')
   S = params.S;
 else
-  S = 1;
+  S = 3;
 end
 
 data_distribution = DataDistribution.Normal;
@@ -60,15 +56,41 @@ model.G.lambda = diag(Lambda);
 
 % Filter coefficients.
 truth.h = zeros(L, numFilters);
+% Because of the way we are coming up with orthogonal vectors,
+% which is fixed to three-dimensional vectors.
+assert(L == 3)
+% Because we are using three-dimensional vectors for the
+% filter coefficients and they must be mutually orthogonal.
+assert(2 <= numFilters && numFilters <= 3)
 
 switch data_distribution
 case DataDistribution.Normal
-  truth.h = randn(L, numFilters);
-  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
+  truth.h(:, 1) = randn(L, 1);
+
+  truth.h([1 2], 2) = randn(2, 1);
+
+  if numFilters > 2
+    truth.h(1, 3) = randn;
+  end
 
 case DataDistribution.Uniform
-  truth.h = rand(L, numFilters);
-  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
+  truth.h(:, 1) = rand(L, 1);
+
+  truth.h([1 2], 2) = rand(2, 1);
+
+  if numFilters > 2
+    truth.h(1, 3) = rand;
+  end
+end
+
+truth.h(3, 2) = - (truth.h([1 2], 1)' * truth.h([1 2], 2)) / truth.h(3, 1);
+if numFilters > 2
+  truth.h([2 3], 3) = [truth.h([2 3], 1)'; truth.h([2 3], 2)'] \ ...
+                      (-truth.h(1, 3) * [truth.h(1,1); truth.h(1,2)]);
+end
+
+for i = 1:numFilters
+  truth.h(:, i) = truth.h(:, i) / norm(truth.h(:, i));
 end
 
 model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
@@ -84,33 +106,27 @@ for i = 1:numFilters
   H(:, N*(i-1)+1:N*i) = Hi;
 end
 
-% Input signals.
-truth.xSupport = zeros(numFilters, S);
-for i = 1:numFilters
-  truth.xSupport(i, :) = randperm(N, S);
-end
+% Input.
 
-if params.verbose
-  found_overlap = false;
-  i = 1;
-  while i <= numFilters && ~found_overlap
+truth.xSupport = zeros(numFilters, S);
+while true
+  for i = 1:numFilters
+    truth.xSupport(i, :) = randperm(N, S);
+  end
+
+  empty_intersection = true;
+  for i = 1:numFilters-1
     for j = i+1:numFilters
       if ~isempty(intersect(truth.xSupport(i, :), truth.xSupport(j, :)))
-        found_overlap = true;
-        break
+        empty_intersection = false;
       end
     end
-
-    i = i + 1;
   end
 
-  if found_overlap
-    fprintf('The input signals overlap.\n')
-  else
-    fprintf('The input signals do not overlap.\n')
+  if empty_intersection
+    break
   end
 end
-
 
 truth.x = zeros(N, numFilters);
 
@@ -118,13 +134,23 @@ switch data_distribution
 case DataDistribution.Normal
   for i = 1:numFilters
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
-    truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 
 case DataDistribution.Uniform
   for i = 1:numFilters
     truth.x(truth.xSupport(i, :), i) = rand(S, 1);
-    truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
+  end
+end
+
+% Normalize input signals.
+for i = 1:numFilters
+  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i), 1);
+end
+
+for i = 1:numFilters-1
+  for j = i+1:numFilters
+    assert(truth.x(:, i)' * truth.x(:, j) == 0)
+    assert(abs(truth.h(:, i)' * truth.h(:, j)) < 1e-10)
   end
 end
 
