@@ -1,6 +1,7 @@
 ### icassp 2018
 
-#### Scenario 1. Two coupled random graphs.
+#### Scenario 1. Single random graph (multiple diffusing filters on the same graph).
+
 ```Matlab
 >> addpath('experiment_singlegraph_bss_logdet')
 >> singlegraph_bss_logdet_N_S_numFilters
