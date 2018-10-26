@@ -1,3 +1,5 @@
+clearvars
+
 num_simulations = 50;
 verbose = false;
 

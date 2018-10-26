@@ -16,8 +16,8 @@ for n = 1:length(NN)
       load(fname)
 
       if NN(n) < 80
-        figure
-        hist(recovery_performance)
+        %figure
+        %hist(recovery_performance)
         title(sprintf('N = %d F = %d S = %d', NN(n), numFilters, S))
         xlabel('Recovery performance')
       end
