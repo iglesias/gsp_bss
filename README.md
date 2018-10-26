@@ -1,6 +1,6 @@
 ### icassp 2018
 
-## Scenario 1. Two coupled random graphs.
+#### Scenario 1. Two coupled random graphs.
 ```Matlab
 >> addpath('experiment_singlegraph_bss_logdet')
 >> singlegraph_bss_logdet_N_S_numFilters
@@ -12,10 +12,10 @@
 >> analysis_singlegraph_bss_logdet
 ```
 
-## Scenario 2. Two coupled random graphs.
+#### Scenario 2. Two coupled random graphs.
 TODO
 
-## Scenario 3. Multiple brain graphs.
+#### Scenario 3. Multiple brain graphs.
 
 ```Matlab
 >> addpath('experiment_brain_bss_logdet')
