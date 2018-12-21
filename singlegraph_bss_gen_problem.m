@@ -74,14 +74,15 @@ end
 model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
 
 % Build filter matrices.
-H = zeros(N, N * numFilters);
+truth.H = zeros(N, N * numFilters);
 for i = 1:numFilters
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
     Hi = Hi + truth.h(l+1, i)*model.G.S^l;
   end
 
-  H(:, N*(i-1)+1:N*i) = Hi;
+  Hi*randn(N, 1)
+  truth.H(:, N*(i-1)+1:N*i) = Hi;
 end
 
 % Input signals.
@@ -128,7 +129,7 @@ case DataDistribution.Uniform
   end
 end
 
-y = H*truth.x(:);
+y = truth.H*truth.x(:);
 
 model.A = kr(model.Psi', model.G.U)';
 
