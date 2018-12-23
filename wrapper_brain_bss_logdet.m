@@ -1,7 +1,7 @@
 function wrapper_brain_bss_logdet
 
-verbose_multigraph_bss_logdet = true;
-verbose_self = true;
+verbose_multigraph_bss_logdet = false;
+verbose_self = false;
 
 params.numGraphs = 2;
 params.L = 3;

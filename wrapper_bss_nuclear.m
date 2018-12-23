@@ -1,8 +1,8 @@
 function wrapper_bss_nuclear
 
-verbose_bss_nuclear = true;
-verbose_self = true;
-do_plot = true;
+verbose_bss_nuclear = false;
+verbose_self = false;
+do_plot = false;
 
 params.numFilters = 2;
 

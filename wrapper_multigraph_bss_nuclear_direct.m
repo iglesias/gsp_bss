@@ -1,6 +1,6 @@
 function wrapper_multigraph_bss_nuclear_direct
 
-verbose_multigraph_bss_nuclear_direct = true;
+verbose_multigraph_bss_nuclear_direct = false;
 verbose_self = false;
 
 [truth, model, y] = multigraph_bss_gen_problem;

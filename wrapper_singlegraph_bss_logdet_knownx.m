@@ -1,9 +1,9 @@
 function wrapper_singlegraph_bss_logdet_knownx
 
-verbose_optimizer = true;
-verbose_self = true;
+verbose_optimizer = false;
+verbose_self = false;
 
-params.verbose = true;
+params.verbose = false;
 params.numFilters = 2;
 params.L = 3;
 params.N = 50;

@@ -1,8 +1,8 @@
 function wrapper_bss_logdet
 
 verbose_bss_logdet = false;
-verbose_self = true;
-do_plot = true;
+verbose_self = false;
+do_plot = false;
 
 params.numFilters = 2;
 

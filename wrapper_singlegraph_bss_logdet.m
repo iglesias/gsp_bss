@@ -1,7 +1,7 @@
 function wrapper_singlegraph_bss_logdet
 
-verbose_bss_logdet = true;
-verbose_self = true;
+verbose_bss_logdet = false;
+verbose_self = false;
 
 [truth, model, y] = singlegraph_svd_bss_gen_problem;
 [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
