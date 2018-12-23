@@ -13,16 +13,17 @@ for m = 1:length(NUM_NODES)
   success = zeros(num_simulations, 1);
   iters_to_solve = inf(num_simulations, 1);
 
-  ppm = ParforProgMon(sprintf('num_nodes=%d ', NUM_NODES(m)), num_simulations);
-  parfor n = 1:num_simulations
-    [truth, model, y] = multigraph_bss_gen_problem(NUM_NODES(m));
+%  ppm = ParforProgMon(sprintf('num_nodes=%d ', NUM_NODES(m)), num_simulations);
+  for n = 1:num_simulations
+    params.N = NUM_NODES(m);
+    [truth, model, y] = multigraph_bss_gen_problem(params);
     [Z_hat, iter] = multigraph_bss_logdet(y, model.A, model.V, ...
                                   verbose_multigraph_bss_logdet);
     if recovery_assessment(truth.Z, Z_hat) < 1e-3
       success(n) = 1;
       iters_to_solve(n) = iter;
     end
-    ppm.increment();
+%    ppm.increment();
   end
 
   SUCCESS(m) = sum(success)/num_simulations;
