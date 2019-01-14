@@ -23,13 +23,20 @@ for i = 1:2
   cycle(i).Psi_norms = reshape(norms(cycle(i).Psi'), N, 1);
 end
 
-figure
 x = erdosrenyi(1).Psi_norms .* erdosrenyi(2).Psi_norms;
 y = cycle(1).Psi_norms .* cycle(2).Psi_norms;
+
 figure(1)
 hist(x, 50)
+title(sprintf('ER\nmedian=%d', median(x)))
+xlabel('||\Psi_{1,l}|| ||\Psi_{2,l}||')
+ylabel('Histogram count')
+
 figure(2)
-hist(y, 50)
+hist(y, 10)
+title(sprintf('Cycle\nmedian=%d', median(y)))
+xlabel('||\Psi_{1,l}|| ||\Psi_{2,l}||')
+ylabel('Histogram count')
 
 end
 
