@@ -35,7 +35,7 @@ data_distribution = DataDistribution.Uniform;
 shift_operator = ShiftOperator.Adjacency;
 
 % Edge existence probability.
-p = 0.1;
+p = 0.05;
 for i = 1:numGraphs
   % Adjacency matrix.
   model.G(i).W = generate_connected_ER(N, p);

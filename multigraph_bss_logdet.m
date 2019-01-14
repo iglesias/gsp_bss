@@ -8,7 +8,7 @@ end
 
 epsilon_rank = 5e-2;
 epsilon_normx = 1e-3;
-max_iter = 30;
+max_iter = 5;
 
 assert(length(A) == size(V, 3))
 numGraphs = size(V, 3);
