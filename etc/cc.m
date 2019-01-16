@@ -25,6 +25,7 @@ end
 
 x = erdosrenyi(1).Psi_norms .* erdosrenyi(2).Psi_norms;
 y = cycle(1).Psi_norms .* cycle(2).Psi_norms;
+z = [erdosrenyi(1).Psi_norms.*cycle(2).Psi_norms; erdosrenyi(1).Psi_norms.*cycle(1).Psi_norms; erdosrenyi(2).Psi_norms.*cycle(1).Psi_norms; erdosrenyi(2).Psi_norms.*cycle(2).Psi_norms];
 
 figure(1)
 hist(x, 50)
@@ -35,6 +36,12 @@ ylabel('Histogram count')
 figure(2)
 hist(y, 10)
 title(sprintf('Cycle\nmedian=%d', median(y)))
+xlabel('||\Psi_{1,l}|| ||\Psi_{2,l}||')
+ylabel('Histogram count')
+
+figure(4)
+hist(z, 50)
+title(sprintf('ER and cycle w/ shift=1\nmedian=%d', median(z)))
 xlabel('||\Psi_{1,l}|| ||\Psi_{2,l}||')
 ylabel('Histogram count')
 
