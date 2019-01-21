@@ -2,10 +2,10 @@ function [erdosrenyi, cycle]  =cc
 
 % product of the norms of psi_2,l psi_1,l
 
-L = 3;
+L = 2;
 
 N = 50;
-p = 0.1;
+p = 0.8;
 for i = 1:2
   erdosrenyi(i).A = generate_connected_ER(N, p);
   [erdosrenyi(i).V, erdosrenyi(i).Lambda] = eig(erdosrenyi(i).A);
@@ -25,7 +25,7 @@ end
 
 x = erdosrenyi(1).Psi_norms .* erdosrenyi(2).Psi_norms;
 y = cycle(1).Psi_norms .* cycle(2).Psi_norms;
-z = [erdosrenyi(1).Psi_norms.*cycle(2).Psi_norms; erdosrenyi(1).Psi_norms.*cycle(1).Psi_norms; erdosrenyi(2).Psi_norms.*cycle(1).Psi_norms; erdosrenyi(2).Psi_norms.*cycle(2).Psi_norms];
+z = [erdosrenyi(1).Psi_norms.*cycle(2).Psi_norms; erdosrenyi(2).Psi_norms.*cycle(2).Psi_norms];
 
 figure(1)
 hist(x, 50)
@@ -39,7 +39,7 @@ title(sprintf('Cycle\nmedian=%d', median(y)))
 xlabel('||\Psi_{1,l}|| ||\Psi_{2,l}||')
 ylabel('Histogram count')
 
-figure(4)
+figure(3)
 hist(z, 50)
 title(sprintf('ER and cycle w/ shift=1\nmedian=%d', median(z)))
 xlabel('||\Psi_{1,l}|| ||\Psi_{2,l}||')

@@ -2,12 +2,12 @@ function [success, iters_to_solve] = assess_recovery_mixed_graphs
 
 verbose_multigraph_bss_logdet = false;
 
-num_simulations = 50;
+num_simulations = 100;
 success = zeros(num_simulations, 1);
 iters_to_solve = inf(num_simulations, 1);
 
 N = 50;
-p = 0.5;
+p = 0.8;
 
 for n = 1:num_simulations
   model.G(1).W = generate_connected_ER(N, p);
