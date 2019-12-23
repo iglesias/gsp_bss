@@ -8,7 +8,7 @@ end
 
 epsilon_rank = 5e-2;
 epsilon_normx = 1e-3;
-max_iter = 30;
+max_iter = 10;
 
 assert(length(A) == size(V, 3))
 numGraphs = size(V, 3);
@@ -52,6 +52,7 @@ while (flag == 1 && iter <= max_iter)
     pho = 1;
     tau = 0.5;
     objective = 0;
+
     for i = 1:numGraphs
       objective = objective + ...
         pho*(trace((Theta_old(:, :, i) + epsilon_rank*eye(N))\Theta(:, :, i)) + ...
