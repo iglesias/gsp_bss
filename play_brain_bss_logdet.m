@@ -3,6 +3,8 @@ clearvars
 num_simulations = 1;
 verbose = false;
 
+predictor = zeros(6, 6);
+
 m = 1;
 for brain_a = 1:6
   for brain_b = brain_a+1:6
@@ -25,7 +27,7 @@ for brain_a = 1:6
     end
 
     fprintf('%d %d\n', brain_a, brain_b)
-    max(abs(model.G(1).U(:))) * max(abs(model.G(2).U(:))) * max(norms(model.Psi{1}', 2)'.^2) * max(norms(model.Psi{2}', 2)'.^2)
+    predictor(brain_a, brain_b) = max(abs(model.G(1).U(:))) * max(abs(model.G(2).U(:))) * max(norms(model.Psi{1}', 2)'.^2) * max(norms(model.Psi{2}', 2)'.^2);
 %     SUCCESS(m) = sum(success)/num_simulations
 %     TIME(m) = toc
     m = m+1;
