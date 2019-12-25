@@ -66,12 +66,12 @@ truth.h = zeros(L, numGraphs);
 switch data_distribution
 case DataDistribution.Normal
   truth.h = randn(L, numGraphs);
-  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
-
 case DataDistribution.Uniform
   truth.h = rand(L, numGraphs);
-  truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 end
+
+% Normalize filter taps.
+truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 
 for i = 1:numGraphs
   model.Psi{i} = repmat(model.G(i).lambda, 1, L).^repmat([0:L-1], N, 1);

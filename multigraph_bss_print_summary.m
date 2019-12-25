@@ -17,8 +17,8 @@ for i = 1:P
 end
 
 for i = 1:P
-  fprintf(sprintf('svd(Z%d_hat)=(%s)\n', i, svd_fmt_str), ...
-          svd(Z_hat(:, :, i)))
+  fprintf(sprintf('svd(Z%d)    =(%s)\n', i, svd_fmt_str), svd(truth.Z{i}))
+  fprintf(sprintf('svd(Z%d_hat)=(%s)\n', i, svd_fmt_str), svd(Z_hat(:, :, i)))
 end
 
 fprintf('Recovery assessment: %d\n', ...
