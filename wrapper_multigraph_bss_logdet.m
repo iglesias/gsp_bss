@@ -4,8 +4,8 @@ verbose_multigraph_bss_logdet = true;
 verbose_self = true;
 
 params.numGraphs = 2;
-params.L = 20;
-params.N = 20;
+params.L = 3;
+params.N = 50;
 params.S = 3;
 
 [truth, model, y] = multigraph_bss_gen_problem(params);
