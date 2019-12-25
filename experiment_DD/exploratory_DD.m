@@ -1,7 +1,6 @@
 clearvars
 
-% Load data from dataset
-load('dataset\all_data_eigL_x6');
+load('data\all_data_eigL_x6');
 
 % Control variables
 n_graphs = min(100, length(XX));
@@ -19,6 +18,7 @@ for i = 1:n_graphs
     s = SS{i};
     NN(i) = length(h_freq);
     Psi = fliplr(vander(e));
+    assert(all(size(Psi) == [NN(i), NN(i)]))
     H = V*diag(h_freq)*V';   
 %     disp(['Graph: ' num2str(i) '   N_nodes: ' num2str(NN(i))])
     
@@ -32,7 +32,8 @@ i = indices(end); j = indices(end-1);
 
 y = XX{i} + XX{j};
 
-Psi_cut = 10;
+% Experiment using truncated Psi's reducing right-most columns
+Psi_cut = 20;
 
 tmp_Psi_i = fliplr(vander(EE{i}));
 Psi_i = tmp_Psi_i(:, 1:Psi_cut);
@@ -47,10 +48,15 @@ model.V = zeros(20, 20, 2); % two graphs/sources of 20 nodes.
 model.V(:,:,1) = VV{i};
 model.V(:,:,2) = VV{j};
 
-verbose_solver = true;
+verbose_solver = false;
+% Due to large filter orders, Vandermonde Psi has large values and solvers run into
+% numerical instabilities. mosek solver at least does not return NaN's.
+cvx_solver mosek
 Z_hat = multigraph_bss_logdet(y, model.A, model.V, verbose_solver);
 
 model.G(1).V = model.V(:,:,1);
 model.G(2).V = model.V(:,:,2);
 truth.Z = {SS{i}*(pinv(Psi_i)*HH_Freq{i})', SS{j}*(pinv(Psi_j)*HH_Freq{j})'};
 multigraph_bss_print_summary(Z_hat, truth, model, y);
+
+plot_Zs(truth.Z, Z_hat)
