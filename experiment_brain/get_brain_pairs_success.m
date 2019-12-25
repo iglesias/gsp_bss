@@ -1,4 +1,4 @@
-function probs = get_brain_pairs_succcess
+function probs = get_brain_pairs_success
 
 probs = zeros(6, 6);
 

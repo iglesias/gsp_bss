@@ -26,8 +26,9 @@ for brain_a = 1:6
 %      ppm.increment();
     end
 
-    fprintf('%d %d\n', brain_a, brain_b)
     predictor(brain_a, brain_b) = max(abs(model.G(1).U(:))) * max(abs(model.G(2).U(:))) * max(norms(model.Psi{1}', 2)'.^2) * max(norms(model.Psi{2}', 2)'.^2);
+
+%    fprintf('%d %d\n', brain_a, brain_b)
 %     SUCCESS(m) = sum(success)/num_simulations
 %     TIME(m) = toc
     m = m+1;
@@ -36,3 +37,6 @@ end
 
 % display(SUCCESS)
 % display(TIME)
+
+probs = get_brain_pairs_success;
+analyse_brain_pairs(predictor, probs);
