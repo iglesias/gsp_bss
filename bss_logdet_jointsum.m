@@ -8,7 +8,7 @@ end
 
 epsilon_rank = 5e-2;
 epsilon_normx = 1e-3;
-max_iter = 30;
+max_iter = 10;
 
 %% Blind source separation using rank mininimization: log-det surrogate
 
