@@ -147,9 +147,9 @@ case DataDistribution.Uniform
 end
 
 % Normalize input signals.
-for i = 1:numFilters
-  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i), 1);
-end
+%for i = 1:numFilters
+%  truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i), 1);
+%end
 
 for i = 1:numFilters-1
   for j = i+1:numFilters
