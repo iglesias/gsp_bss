@@ -17,6 +17,12 @@ else
   L = 3;
 end
 
+if isfield(params, 'noise')
+  noise = params.noise;
+else
+  noise = 0;
+end
+
 load('data/karate')
 G = graph(edges(:,1), edges(:,2));
 G.Nodes = table(name);
@@ -158,7 +164,7 @@ for i = 1:numFilters-1
   end
 end
 
-y = H*truth.x(:);
+y = H*truth.x(:) + noise*randn(N, 1);
 
 model.A = kr(model.Psi', model.G.U)';
 
