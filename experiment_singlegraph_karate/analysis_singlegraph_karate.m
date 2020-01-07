@@ -13,7 +13,7 @@ for n = 1:length(NOISE)
     for numFilters = NUM_FILTERS
       fname = sprintf(fname_pattern, S, numFilters, NOISE(n));
       fprintf('Reading %s\n', fname);
-      load(fname, '-mat')
+      load(fname, '-mat', 'recovery_performance')
 
       plot_mean_data(n, plot_idx) = mean(recovery_performance);
       plot_median_data(n, plot_idx) = median(recovery_performance);
