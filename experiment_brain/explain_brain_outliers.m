@@ -1,4 +1,4 @@
-load('E:\MATLAB\gsp_bss\data\brain_data_66')
+load('data/brain_data_66')
 
 for i = 1:size(CC, 3)
   brain_graph = CC(:,:,i)*100;
@@ -16,6 +16,7 @@ for i = 1:size(CC, 3)
 end
 
 [max_vals, max_idxs] = maxk(brain_pairs_similarity, 3);
+figure
 stem(brain_pairs_similarity, 'LineWidth', 2)
 hold on
 stem(max_idxs, max_vals, 'LineWidth', 2)
