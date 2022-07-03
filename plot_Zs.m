@@ -8,10 +8,10 @@ num_subplot_cols = length(Z);
 for i = 1:num_subplot_cols
   subplot(2, num_subplot_cols, i)
   imagesc(Z{i})
-  caxis([-1 1]), colorbar
+  colorbar, caxis([-1 1])
   subplot(2, num_subplot_cols, i + num_subplot_cols)
   imagesc(Z_hat(:, :, i))
-  caxis([-1 1]), colorbar
+  colorbar, caxis([-1 1])
 end
 
 end

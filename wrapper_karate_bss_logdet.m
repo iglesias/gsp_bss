@@ -1,12 +1,15 @@
-function wrapper_singlegraph_bss_logdet
+function wrapper_karate_bss_logdet
 
 verbose_bss_logdet = false;
 verbose_self = true;
 
-params.S = 2;
+params.L = 3;
+params.numFilters = 2;
+params.S = 1;
+
 perf_sum = inf;
 while perf_sum > 1e-3
-  [truth, model, y] = singlegraph_svd_bss_gen_problem(params);
+  [truth, model, y] = karate_bss_gen_problem(params);
   [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
   perf_sum = norm(truth.Zsum - Zsum_hat, 'fro') / norm(truth.Zsum, 'fro');
 end
@@ -24,5 +27,7 @@ if verbose_self
   plot_Zs(truth.Z, Z_hat)
   print_analysis
 end
+
+
 
 end
