@@ -41,7 +41,7 @@ else
 end
 
 data_distribution = DataDistribution.Normal;
-shift_operator = ShiftOperator.Adjacency;
+shift_operator = ShiftOperator.Laplacian;
 
 for i = 1:numGraphs
   % Adjacency matrix.
