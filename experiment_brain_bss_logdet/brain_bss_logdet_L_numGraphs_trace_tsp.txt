@@ -1,0 +1,16 @@
+L2 S1 numGraphs2: success=7.580000e-01 time=9.178936e+02
+L2 S1 numGraphs3: success=5.390000e-01 time=2.366100e+03
+L2 S1 numGraphs4: success=3.260000e-01 time=4.644902e+03
+L2 S1 numGraphs5: success=2.180000e-01 time=7.386930e+03
+L3 S1 numGraphs2: success=8.560000e-01 time=1.117284e+03
+L3 S1 numGraphs3: success=6.630000e-01 time=2.995199e+03
+L3 S1 numGraphs4: success=4.520000e-01 time=6.297616e+03
+L3 S1 numGraphs5: success=2.920000e-01 time=1.013696e+04
+L4 S1 numGraphs2: success=8.720000e-01 time=1.676807e+03
+L4 S1 numGraphs3: success=6.880000e-01 time=4.747060e+03
+L4 S1 numGraphs4: success=4.920000e-01 time=9.786237e+03
+L4 S1 numGraphs5: success=3.270000e-01 time=1.613245e+04
+L5 S1 numGraphs2: success=8.060000e-01 time=2.512779e+03
+L5 S1 numGraphs3: success=5.060000e-01 time=7.447800e+03
+L5 S1 numGraphs4: success=5.280000e-01 time=2.454171e+04
+L5 S1 numGraphs5: success=2.810000e-01 time=4.267096e+04
