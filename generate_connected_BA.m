@@ -1,4 +1,7 @@
 function A = generate_connected_BA(N, m)
+%
+% generate_connected_BA Barabási-Albert (BA) graph.
+%
 
 assert(N > m)
 

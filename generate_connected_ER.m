@@ -1,6 +1,7 @@
-% Generate a connected ER graph from parameters N and p
-
 function G = generate_connected_ER(N, p)
+%
+% generate_connected_ER Erd?s–Rényi (ER) graph.
+%
 
 flag_connected = 0;
 while flag_connected ==0
@@ -9,7 +10,7 @@ while flag_connected ==0
     G = G + G'; % Adjacency matrix
     % Check that graph is connected
     L = diag(sum(G))-G;
-    [V Lambda] = eig(L);
+    [~, Lambda] = eig(L);
     if sum(diag(abs(Lambda))<=10^-6)==1
         flag_connected = 1;
     end
