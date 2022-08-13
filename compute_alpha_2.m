@@ -4,7 +4,6 @@ numGraphs = 2;
 assert(length(model.G) == numGraphs)
 
 for i = 1:numGraphs
-  assert(issymmetric(model.G(i).W))
   [model.G(i).V, Lambda] = eig(model.G.W);
   model.G(i).U = inv(model.G(i).V);
   model.G(i).lambda = diag(Lambda);

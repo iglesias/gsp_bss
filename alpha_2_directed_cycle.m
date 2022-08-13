@@ -47,7 +47,9 @@ for n = 1:length(NN)
   N = NN(n);
 
   % Adjacency matrix for the directed cycle.
-  model.G.W = circshift(eye(N), [N 1]);
+  model.G(1).W = circshift(eye(N), [N 1]);
+  model.G(2).W = circshift(eye(N), [N 1]);
+  warning('Using the directed cycle twice (the exact same graph!) to compute alpha_2.')
 
   L = 2;
   S = 1; % [1 2]
