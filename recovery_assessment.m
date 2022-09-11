@@ -1,17 +1,16 @@
-function v = recovery_assesment(Z, Z_hat)
-%RECOVERY_ASSESMENT
-%   v = recovery_assesment(Z, Z_hat)
+function v = recovery_assessment(Z, Z_hat)
+%RECOVERY_ASSESSMENT
+%   v = recovery_assessment(Z, Z_hat)
 %
 
 assert(length(Z) == size(Z_hat, 3))
 
-num = 0;
-den = 0;
-for i = 1:length(Z)
-  num = num + norm(Z_hat(:, :, i) - Z{i}, 'fro')^2;
-  den = den + norm(Z{i}, 'fro')^2;
-end
+% Shorthand.
+R = length(Z);
 
-v = sqrt(num) / sqrt(den);
+v = 0;
+for i = 1:R
+  v = v + 1/R*norm(Z_hat(:, :, i) - Z{i}, 'fro');
+end
 
 end
