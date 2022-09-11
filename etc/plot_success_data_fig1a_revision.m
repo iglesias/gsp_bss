@@ -4,8 +4,9 @@ NUM_FILTERS = zeros(1, 2);
 
 % Data generated from 100 simulations with
 % experiment_singlegraph_bss_logdet/singlegraph_bss_logdet_N_S_numFilters
-% (it takes about 1.5h in Intel(R) Core™ i7-6700HQ CPU @ 2.60GHz and 16 GB
-% of RAM)
+%      1.5h
+%      Intel(R) Core™ i7-6700HQ CPU @ 2.60GHz
+%      16 GB RAM
 %
 % N 60 S6  numFilters2: success=0.44
 % N 60 S6  numFilters3: success=0.01
