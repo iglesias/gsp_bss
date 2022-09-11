@@ -1,9 +1,12 @@
 function wrapper_bss_logdet
 
-verbose_bss_logdet = false;
-verbose_self = false;
-do_plot = false;
+verbose_bss_logdet = true;
+verbose_self = true;
+do_plot = true;
 
+params.L = 3;
+params.N = 50;
+params.S = 1;
 params.numFilters = 2;
 
 [truth, model, y] = singlegraph_svd_bss_gen_problem(params);

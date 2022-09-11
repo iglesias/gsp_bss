@@ -22,5 +22,6 @@ hold on
 stem(max_idxs, max_vals, 'LineWidth', 2)
 hold off
 grid on
-xlabel('Brain graph pairs')
-ylabel('Pair similarity')
+xlabel('Brain graph pairs', 'FontSize', 14)
+ylabel('Pair similarity', 'FontSize', 14)
+set(gca, 'FontSize', 14)

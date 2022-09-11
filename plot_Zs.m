@@ -9,9 +9,11 @@ for i = 1:num_subplot_cols
   subplot(2, num_subplot_cols, i)
   imagesc(Z{i})
   colorbar, caxis([-1 1])
+  title(sprintf('True Z_%i', i))
   subplot(2, num_subplot_cols, i + num_subplot_cols)
   imagesc(Z_hat(:, :, i))
   colorbar, caxis([-1 1])
+  title(sprintf('Demixed Z_%i', i))
 end
 
 end

@@ -1,16 +1,15 @@
-function singlegraph_bss_logdet_N_S_numFilters
+function [success, recovery_performance, iters_to_solve] = singlegraph_bss_logdet_N_S_numFilters
 
-num_simulations = 1000;
+num_simulations = 10;
 verbose_bss_logdet = false;
 
 params.L = 3;
 
-NN = [20 40 60 80 100 120];
-SS = [3 6];
+NN = [60 100 140 180];
+SS = [6 9];
 NUM_FILTERS = [2 3];
 
 for N = NN, for S = SS, for numFilters = NUM_FILTERS
-  tic
   success = zeros(num_simulations, 1);
   iters_to_solve = inf(num_simulations, 1);
   recovery_performance = zeros(num_simulations, 1);
@@ -20,7 +19,7 @@ for N = NN, for S = SS, for numFilters = NUM_FILTERS
   params.numFilters = numFilters;
 
   parfor n = 1:num_simulations
-    [truth, model, y] = singlegraph_bss_gen_problem(params);
+    [truth, model, y] = singlegraph_svd_bss_gen_problem(params);
     [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
 
     [UZ, SZ, VZ] = svd(Zsum_hat, 'econ');
@@ -36,14 +35,13 @@ for N = NN, for S = SS, for numFilters = NUM_FILTERS
     end
   end
 
-  time = toc;
   success_percent = sum(success)/num_simulations;
-  fprintf('N%3d S%d L%d numFilters%d: success=%.2f time=%5d\n', ...
+  fprintf('N%3d S%d L%d numFilters%d: success=%.2f\n', ...
           params.N, params.S, params.L, params.numFilters, ...
-          success_percent, time)
+          success_percent);
 
-  save(sprintf('play_singlegraph_bss_logdet_N%d_S%d_L%d_numFilters%d', ...
-               params.N, params.S, params.L, params.numFilters));
+%   save(sprintf('singlegraph_bss_logdet_N%d_S%d_L%d_numFilters%d', ...
+%                params.N, params.S, params.L, params.numFilters));
 end, end, end
 
 end

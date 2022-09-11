@@ -9,7 +9,6 @@ for i = 1:P
   y_hat = y_hat + model.G(i).V*model.A{i}*vec(Z_hat(:, :, i));
 end
 
-fprintf('\n\n')
 fprintf('Equality constraint test: %d\n', norm(y - y_hat))
 
 for i = 1:P
@@ -23,7 +22,5 @@ end
 
 fprintf('Recovery assessment: %d\n', ...
         recovery_assessment(truth.Z, Z_hat))
-
-fprintf('\n\n')
 
 end

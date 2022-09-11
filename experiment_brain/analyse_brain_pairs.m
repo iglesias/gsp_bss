@@ -41,7 +41,8 @@ plot(x_axis, coeffs(1) + coeffs(2)*x_axis, 'k--', 'LineWidth', 2)
 hold off
 box on
 grid on
-xlabel(xlabel_str)
-ylabel('Success probability')
+xlabel(xlabel_str, 'FontSize', 14)
+ylabel('Rate of successful recovery', 'FontSize', 14)
+set(gca, 'FontSize', 14)
 
 end
