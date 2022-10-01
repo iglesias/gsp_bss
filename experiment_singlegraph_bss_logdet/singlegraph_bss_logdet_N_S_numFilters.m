@@ -1,7 +1,6 @@
 function [success, recovery_performance, iters_to_solve] = singlegraph_bss_logdet_N_S_numFilters
 
 num_simulations = 10;
-verbose_bss_logdet = false;
 
 params.L = 3;
 
@@ -20,7 +19,7 @@ for N = NN, for S = SS, for numFilters = NUM_FILTERS
 
   parfor n = 1:num_simulations
     [truth, model, y] = singlegraph_svd_bss_gen_problem(params);
-    [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V, verbose_bss_logdet);
+    [Zsum_hat, iter] = bss_logdet_jointsum(y, model.A, model.G.V);
 
     [UZ, SZ, VZ] = svd(Zsum_hat, 'econ');
     Z_hat = zeros([size(Zsum_hat) numFilters]);
