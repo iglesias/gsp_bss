@@ -56,15 +56,15 @@ while (flag == 1 && iter <= max_iter)
     for i = 1:numGraphs
       objective = objective + ...
         pho*(trace((Theta_old(:, :, i) + epsilon_rank*eye(N))\Theta(:, :, i)) + ...
-        trace((Kappa_old(:, :, i) + epsilon_rank*eye(L))\Kappa(:, :, i))) + ...
-        tau*wx(:, i)'*norms(Z(:, :, i), 2, 2);
+        trace( inv( Kappa_old(:, :, i) + epsilon_rank*eye(L) ) * Kappa(:,:,i) )) + ...
+        tau*wx(:, i)'*norms(Z(:, :, i), 2, 2); %#ok<*IDISVAR,*NODEF,MINV>
     end
 
     minimize(objective);
 
     subject to
       for i = 1:numGraphs
-        [Theta(:, :, i) Z(:, :, i); Z(:, :, i)' Kappa(:, :, i)] == semidefinite(N+L);
+        [Theta(:, :, i) Z(:, :, i); Z(:, :, i)' Kappa(:, :, i)] == semidefinite(N+L); %#ok<EQEFF>
       end
 
       eq_constraint = 0;
@@ -72,7 +72,7 @@ while (flag == 1 && iter <= max_iter)
         eq_constraint = eq_constraint + V(:, :, i)*A{i}*vec(Z(:, :, i));
       end
 
-      y == eq_constraint;
+      y == eq_constraint; %#ok<EQEFF>
   cvx_end
 
   if verbose
