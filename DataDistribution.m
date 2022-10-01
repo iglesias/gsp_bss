@@ -1,5 +1,5 @@
 classdef DataDistribution
   enumeration
-    Normal, Uniform
+    HeatKernel, Normal, Uniform
   end
 end

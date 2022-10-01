@@ -1,5 +1,12 @@
 function [truth, model, y] = singlegraph_svd_bss_gen_problem(params)
 
+data_distribution = DataDistribution.Normal;
+shift_operator = ShiftOperator.Adjacency;
+
+isignal_distribution = DataDistribution.Uniform;
+filter_distribution = DataDistribution.HeatKernel;
+shift_operator = ShiftOperator.Adjacency;
+
 if ~exist('params', 'var')
   params = struct;
 end
@@ -30,9 +37,6 @@ if isfield(params, 'S')
 else
   S = 3;
 end
-
-data_distribution = DataDistribution.Normal;
-shift_operator = ShiftOperator.Adjacency;
 
 % Edge existence probability.
 p = 0.1;

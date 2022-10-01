@@ -1,5 +1,8 @@
 function [truth, model, y] = multigraph_bss_gen_problem(params)
 
+xDistribution = DataDistribution.Uniform;
+shiftOperator = ShiftOperator.Adjacency;
+
 if ~exist('params', 'var')
   params = struct;
 end
@@ -17,6 +20,13 @@ else
   L = 2;
 end
 
+% Data distribution of the filter values.
+if isfield(params, 'filterDistribution')
+  filterDistribution = params.filterDistribution;
+else
+  filterDistribution = DataDistribution.Uniform;
+end
+
 % Number of nodes.
 if isfield(params, 'N')
   N = params.N;
@@ -31,9 +41,6 @@ else
   S = 1;
 end
 
-data_distribution = DataDistribution.Uniform;
-shift_operator = ShiftOperator.Adjacency;
-
 % Edge existence probability.
 p = 0.1;
 for i = 1:numGraphs
@@ -45,7 +52,7 @@ for i = 1:numGraphs
   assert(issymmetric(model.G(i).W))
   assert(issymmetric(model.G(i).L))
 
-  switch shift_operator
+  switch shiftOperator
   case ShiftOperator.Adjacency
     model.G(i).S = model.G(i).W;
   case ShiftOperator.Laplacian
@@ -63,11 +70,13 @@ model.V = reshape([model.G.V], [N, N, numGraphs]);
 % Filter coefficients.
 truth.h = zeros(L, numGraphs);
 
-switch data_distribution
+switch filterDistribution
 case DataDistribution.Normal
   truth.h = randn(L, numGraphs);
 case DataDistribution.Uniform
   truth.h = rand(L, numGraphs);
+case DataDistribution.HeatKernel
+  truth.h = exp(-(0.3*rand(numGraphs, 1)+0.7)*(L:-1:1))';
 end
 
 % Normalize filter taps.
@@ -100,7 +109,7 @@ end
 
 truth.x = zeros(N, numGraphs);
 
-switch data_distribution
+switch xDistribution
 case DataDistribution.Normal
   for i = 1:numGraphs
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
