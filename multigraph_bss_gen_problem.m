@@ -1,6 +1,6 @@
 function [truth, model, y] = multigraph_bss_gen_problem(params)
 
-xDistribution = DataDistribution.Uniform;
+xDistribution = DataDistribution.Normal;
 shiftOperator = ShiftOperator.Adjacency;
 
 if ~exist('params', 'var')

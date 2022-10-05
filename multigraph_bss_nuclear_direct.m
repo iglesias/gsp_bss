@@ -23,7 +23,8 @@ cvx_begin quiet
   tau = 0.5;
   objective = 0;
   for i = 1:numGraphs
-    objective = objective + pho*norm_nuc(Z(:, :, i)) + tau*sum(norms(Z(:, :, i), 2, 2));
+    objective = objective + pho*norm_nuc(Z(:, :, i)) + ...
+      tau*sum(norms(Z(:, :, i)*diag(2.^(0:L-1)), 2, 2)); %#ok<*NODEF,*IDISVAR>
   end
 
   minimize(objective);
@@ -34,7 +35,7 @@ cvx_begin quiet
       eq_constraint = eq_constraint + V(:, :, i)*A{i}*vec(Z(:, :, i));
     end
 
-    y == eq_constraint;
+    y == eq_constraint; %#ok<EQEFF>
 cvx_end
 
 if verbose
@@ -49,7 +50,7 @@ if verbose
   fprintf('%d %d\n', a, b)
 
   for i = 1:numGraphs
-    fprintf(sprintf('svd(Z%d)=(%s)\n', i, svd_fmt_str), svd(Z(:, :, i)))
+    fprintf(sprintf('svd(Z%d)=(%s)\n', i, svd_fmt_str), svd(Z(:, :, i)));
   end
 end
 

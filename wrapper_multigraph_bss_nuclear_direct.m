@@ -1,13 +1,16 @@
-function wrapper_multigraph_bss_nuclear_direct
+% wrapper_multigraph_bss_nuclear_direct
+
+clearvars
 
 verbose_multigraph_bss_nuclear_direct = false;
 verbose_self = true;
 do_plot = true;
 
-params.L = 3;
+params.L = 2;
 params.N = 50;
-params.S = 1;
-params.numGraphs = 2;
+params.S = 10;
+params.numGraphs = 1;
+params.filterDistribution = DataDistribution.Normal;
 
 [truth, model, y] = multigraph_bss_gen_problem(params);
 Z_hat = multigraph_bss_nuclear_direct(y, model.A, model.V, ...
@@ -18,6 +21,4 @@ end
 
 if do_plot
   plot_Zs(truth.Z, Z_hat)
-end
-
 end
