@@ -17,14 +17,6 @@ parfor i = 1:num_mc
 end
 sum(e<0.1)
 
-params.filterDistribution = DataDistribution.Uniform;
-parfor i = 1:num_mc
-  [truth, model, y] = multigraph_bss_gen_problem(params);
-  Z_hat = multigraph_bss_nuclear_direct(y, model.A, model.V);
-  e(i) = recovery_assessment(truth.Z, Z_hat);
-end
-sum(e<0.1)
-
 params.filterDistribution = DataDistribution.Normal;
 parfor i = 1:num_mc
   [truth, model, y] = multigraph_bss_gen_problem(params);
