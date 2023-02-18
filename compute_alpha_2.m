@@ -41,6 +41,6 @@ rho_Psi2 = rhof(Psi_2, L);
 rho_max = max(rhof(U_1, S), rhof(U_2, S));
 
 R = numGraphs;
-alpha_2 = 9/32 * 1/(rho_Psi1*rho_Psi2*rho_max + 1/R*kappa_U*kappa_Psi) * 1/(R^2*log10(2*N));
+alpha_2 = (9/32 * 1/(rho_Psi1*rho_Psi2*rho_max + 1/R*kappa_U*kappa_Psi)) * 1/(R^2*log(N));
 
 end
