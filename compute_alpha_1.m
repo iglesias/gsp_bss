@@ -19,12 +19,12 @@ for i = 1:numGraphs
     [Psi_svd_L, ~, ~] = svd(model.Psi{i}, 0);
     model.Psi{i} = Psi_svd_L;
   else
-    model.Psi{i} = model.Psi;
+    model.Psi{i} = model.Psi{i};
   end
 
   rho_Psi__L = rhof(model.Psi{i}, L);
 
-  alpha_1(i) = 3/128 * 1/(rho_Psi__L * rho_U__S * log10(2*N*L*S));
+  alpha_1(i) = 3/128 * 1/(rho_Psi__L * rho_U__S * log(2*N*L*S));
 end
 
 end
