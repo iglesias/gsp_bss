@@ -5,7 +5,7 @@ alphas = work(NN);
 plot_alphas(NN, alphas);
 title('Vandermonde normalized')
 
-NN = 10:20:500;
+NN = round(linspace(10, 1500, 19));
 normalize_Psi = false;
 alphas = work(NN, normalize_Psi);
 plot_alphas(NN, alphas, 'ro-')
@@ -42,36 +42,13 @@ for n = 1:length(NN)
   % Adjacency matrix for the directed cycle.
   model.G.W = circshift(eye(N), [N 1]);
 
-  [model.G.V, Lambda] = eig(model.G.W);
-  U = inv(model.G.V);
-
   S = 1; % [1, 2, 3] % With 3 the long plot doesn't end... within 13h
   assert(S <= N)
-  rho_U__S = -Inf;
-  for ell = 1:N
-    rho_U__S = max(rho_U__S, max(norms(nchoosek(U(ell, :), S), 2, 2).^2));
-  end
 
-  model.G.lambda = diag(Lambda);
   L = 3;
   assert(L <= N)
-  model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1); %#ok<NBRAK>
-  assert(N == size(model.Psi, 1))
 
-  if normalize_Psi
-    [Psi_svd_L, ~, ~] = svd(model.Psi, 0);
-    Psi = Psi_svd_L;
-  else
-    Psi = model.Psi;
-  end
-
-  rho_Psi__L = -Inf;
-  for ell = 1:N
-    rho_Psi__L = max(rho_Psi__L, max(norms(nchoosek(Psi(ell, :), L), 2, 2).^2));
-  end
-
-  alpha_1 = 3/128 * 1/(rho_Psi__L * rho_U__S * log10(2*N*L*S));
-  alphas(n) = alpha_1;
+  alphas(n) = compute_alpha_1(model, S, L, normalize_Psi);
 end
 
 end
