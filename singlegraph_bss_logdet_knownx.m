@@ -42,6 +42,7 @@ Theta_old = repmat(eye(N), [1, 1, numFilters]);
 Kappa_old = repmat(eye(L), [1, 1, numFilters]);
 Z_old = zeros(N, L, numFilters);
 
+R = numFilters;
 % Majorization-minimization.
 while (flag == 1 && iter <= max_iter)
   if verbose
@@ -49,18 +50,18 @@ while (flag == 1 && iter <= max_iter)
   end
 
   %TODO vectorize
-  wx = zeros(N, numFilters);
-  for i = 1:numFilters
+  wx = zeros(N, R);
+  for i = 1:R
     wx(:, i) = 1./(sqrt(sum(abs(Z_old(:, :, i)).^2, 2)) + epsilon_normx);
   end
 
   cvx_begin quiet
-    variable Z(N, L, numFilters);
-    variable Theta(N, N, numFilters) symmetric;
-    variable Kappa(L, L, numFilters) symmetric;
+    variable Z(N, L, R);
+    variable Theta(N, N, R) symmetric;
+    variable Kappa(L, L, R) symmetric;
 
     objective = 0;
-    for i = 1:numFilters
+    for i = 1:R
       objective = objective + ...
                   trace((Theta_old(:, :, i) + epsilon_rank*eye(N))\Theta(:, :, i)) + ...
                   trace((Kappa_old(:, :, i) + epsilon_rank*eye(L))\Kappa(:, :, i));
