@@ -1,5 +1,8 @@
 function [truth, model, y] = singlegraph_bss_gen_problem(params)
 
+data_distribution = DataDistribution.Normal;
+shift_operator = ShiftOperator.Adjacency;
+
 if ~exist('params', 'var')
   params = struct;
 end
@@ -9,16 +12,16 @@ if ~isfield(params, 'verbose')
 end
 
 if isfield(params, 'numFilters')
-  numFilters = params.numFilters;
+  R = params.numFilters;
 else
-  numFilters = 3;
+  R = 2;
 end
 
-% Order of the filters (number of filter coefficients).
+% Number of filter coefficients.
 if isfield(params, 'L')
   L = params.L;
 else
-  L = 2;
+  L = 3;
 end
 
 % Number of nodes.
@@ -34,9 +37,6 @@ if isfield(params, 'S')
 else
   S = 1;
 end
-
-data_distribution = DataDistribution.Normal;
-shift_operator = ShiftOperator.Adjacency;
 
 % Edge existence probability.
 p = 0.1;
@@ -59,23 +59,23 @@ end
 model.G.lambda = diag(Lambda);
 
 % Filter coefficients.
-truth.h = zeros(L, numFilters);
+truth.h = zeros(L, R);
 
 switch data_distribution
 case DataDistribution.Normal
-  truth.h = randn(L, numFilters);
+  truth.h = randn(L, R);
   truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 
 case DataDistribution.Uniform
-  truth.h = rand(L, numFilters);
+  truth.h = rand(L, R);
   truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 end
 
 model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
 
 % Build filter matrices.
-truth.H = zeros(N, N * numFilters);
-for i = 1:numFilters
+truth.H = zeros(N, N * R);
+for i = 1:R
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
     Hi = Hi + truth.h(l+1, i)*model.G.S^l;
@@ -86,16 +86,16 @@ for i = 1:numFilters
 end
 
 % Input signals.
-truth.xSupport = zeros(numFilters, S);
-for i = 1:numFilters
+truth.xSupport = zeros(R, S);
+for i = 1:R
   truth.xSupport(i, :) = randperm(N, S);
 end
 
 if params.verbose
   found_overlap = false;
   i = 1;
-  while i <= numFilters && ~found_overlap
-    for j = i+1:numFilters
+  while i <= R && ~found_overlap
+    for j = i+1:R
       if ~isempty(intersect(truth.xSupport(i, :), truth.xSupport(j, :)))
         found_overlap = true;
         break
@@ -113,17 +113,17 @@ if params.verbose
 end
 
 
-truth.x = zeros(N, numFilters);
+truth.x = zeros(N, R);
 
 switch data_distribution
 case DataDistribution.Normal
-  for i = 1:numFilters
+  for i = 1:R
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
     truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 
 case DataDistribution.Uniform
-  for i = 1:numFilters
+  for i = 1:R
     truth.x(truth.xSupport(i, :), i) = rand(S, 1);
     truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
@@ -134,7 +134,7 @@ y = truth.H*truth.x(:);
 model.A = kr(model.Psi', model.G.U)';
 
 truth.Zsum = zeros(N, L);
-for i = 1:numFilters
+for i = 1:R
   truth.Z{i} = truth.x(:, i)*truth.h(:, i)';
   truth.Zsum = truth.Zsum + truth.Z{i};
 end

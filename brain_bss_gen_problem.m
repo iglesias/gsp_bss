@@ -24,7 +24,7 @@ else
   end
 end
 
-numGraphs = length(brain_idxs);
+R = length(brain_idxs);
 
 % Order of the filters (number of filter coefficients).
 if isfield(params, 'L')
@@ -43,7 +43,7 @@ end
 data_distribution = DataDistribution.Normal;
 shift_operator = ShiftOperator.Laplacian;
 
-for i = 1:numGraphs
+for i = 1:R
   % Adjacency matrix.
   brain_graph = reshape(CC(:,:,brain_idxs(i)), N, N)*100;
   model.G(i).W = double(brain_graph >= min(max(brain_graph)));
@@ -64,29 +64,29 @@ for i = 1:numGraphs
   model.G(i).lambda = diag(Lambda);
 end
 
-model.V = reshape([model.G.V], [N, N, numGraphs]);
+model.V = reshape([model.G.V], [N, N, R]);
 
 % Filter coefficients.
-truth.h = zeros(L, numGraphs);
+truth.h = zeros(L, R);
 
 switch data_distribution
 case DataDistribution.Normal
-  truth.h = randn(L, numGraphs);
+  truth.h = randn(L, R);
   truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 
 case DataDistribution.Uniform
-  truth.h = rand(L, numGraphs);
+  truth.h = rand(L, R);
   truth.h = truth.h ./ repmat(norms(truth.h, 2, 1), L, 1);
 end
 
-for i = 1:numGraphs
+for i = 1:R
   model.Psi{i} = repmat(model.G(i).lambda, 1, L).^repmat([0:L-1], N, 1);
   % disp(minmax(vec(model.Psi{i})'))
 end
 
 % Build filter matrices.
-H = zeros(N, N * numGraphs);
-for i = 1:numGraphs
+H = zeros(N, N * R);
+for i = 1:R
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
     Hi = Hi + truth.h(l+1, i)*model.G(i).S^l;
@@ -97,22 +97,22 @@ end
 
 % Input.
 
-truth.xSupport = zeros(numGraphs, S);
-for i = 1:numGraphs
+truth.xSupport = zeros(R, S);
+for i = 1:R
   truth.xSupport(i, :) = randperm(N, S);
 end
 
-truth.x = zeros(N, numGraphs);
+truth.x = zeros(N, R);
 
 switch data_distribution
 case DataDistribution.Normal
-  for i = 1:numGraphs
+  for i = 1:R
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
     truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
 
 case DataDistribution.Uniform
-  for i = 1:numGraphs
+  for i = 1:R
     truth.x(truth.xSupport(i, :), i) = rand(S, 1);
     truth.x(:, i) = truth.x(:, i) ./ norm(truth.x(:, i));
   end
@@ -120,11 +120,11 @@ end
 
 y = H*truth.x(:);
 
-for i = 1:numGraphs
+for i = 1:R
   model.A{i} = kr(model.Psi{i}', model.G(i).U)';
 end
 
-for i = 1:numGraphs
+for i = 1:R
   truth.Z{i} = truth.x(:, i)*truth.h(:, i)';
 end
 

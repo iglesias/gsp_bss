@@ -12,9 +12,9 @@ if ~exist('params', 'var')
 end
 
 if isfield(params, 'numFilters')
-  numFilters = params.numFilters;
+  R = params.numFilters;
 else
-  numFilters = 3;
+  R = 3;
 end
 
 % Order of the filters (number of filter coefficients).
@@ -59,13 +59,13 @@ end
 model.G.lambda = diag(Lambda);
 
 % Filter coefficients.
-truth.h = zeros(L, numFilters);
+truth.h = zeros(L, R);
 % Because of the way we are coming up with orthogonal vectors,
 % which is fixed to three-dimensional vectors.
 assert(L == 3)
 % Because we are using three-dimensional vectors for the
 % filter coefficients and they must be mutually orthogonal.
-assert(2 <= numFilters && numFilters <= 3)
+assert(2 <= R && R <= 3)
 
 switch data_distribution
 case DataDistribution.Normal
@@ -73,7 +73,7 @@ case DataDistribution.Normal
 
   truth.h([1 2], 2) = randn(2, 1);
 
-  if numFilters > 2
+  if R > 2
     truth.h(1, 3) = randn;
   end
 
@@ -82,26 +82,26 @@ case DataDistribution.Uniform
 
   truth.h([1 2], 2) = rand(2, 1);
 
-  if numFilters > 2
+  if R > 2
     truth.h(1, 3) = rand;
   end
 end
 
 truth.h(3, 2) = - (truth.h([1 2], 1)' * truth.h([1 2], 2)) / truth.h(3, 1);
-if numFilters > 2
+if R > 2
   truth.h([2 3], 3) = [truth.h([2 3], 1)'; truth.h([2 3], 2)'] \ ...
                       (-truth.h(1, 3) * [truth.h(1,1); truth.h(1,2)]);
 end
 
-for i = 1:numFilters
+for i = 1:R
   truth.h(:, i) = truth.h(:, i) / norm(truth.h(:, i));
 end
 
-model.Psi = repmat(model.G.lambda, 1, L).^repmat([0:L-1], N, 1);
+model.Psi = repmat(model.G.lambda, 1, L).^repmat(0:L-1, N, 1);
 
 % Build filter matrices.
-H = zeros(N, N * numFilters);
-for i = 1:numFilters
+H = zeros(N, N * R);
+for i = 1:R
   Hi = truth.h(1, i)*eye(N);
   for l = 1:L-1
     Hi = Hi + truth.h(l+1, i)*model.G.S^l;
@@ -112,15 +112,15 @@ end
 
 % Input.
 
-truth.xSupport = zeros(numFilters, S);
+truth.xSupport = zeros(R, S);
 while true
-  for i = 1:numFilters
+  for i = 1:R
     truth.xSupport(i, :) = randperm(N, S);
   end
 
   empty_intersection = true;
-  for i = 1:numFilters-1
-    for j = i+1:numFilters
+  for i = 1:R-1
+    for j = i+1:R
       if ~isempty(intersect(truth.xSupport(i, :), truth.xSupport(j, :)))
         empty_intersection = false;
       end
@@ -132,27 +132,27 @@ while true
   end
 end
 
-truth.x = zeros(N, numFilters);
+truth.x = zeros(N, R);
 
 switch data_distribution
 case DataDistribution.Normal
-  for i = 1:numFilters
+  for i = 1:R
     truth.x(truth.xSupport(i, :), i) = randn(S, 1);
   end
 
 case DataDistribution.Uniform
-  for i = 1:numFilters
+  for i = 1:R
     truth.x(truth.xSupport(i, :), i) = rand(S, 1);
   end
 end
 
 % Normalize input signals.
-for i = 1:numFilters
+for i = 1:R
   truth.x(:, i) = truth.x(:, i) / norm(truth.x(:, i), 1);
 end
 
-for i = 1:numFilters-1
-  for j = i+1:numFilters
+for i = 1:R-1
+  for j = i+1:R
     assert(truth.x(:, i)' * truth.x(:, j) == 0)
     assert(abs(truth.h(:, i)' * truth.h(:, j)) < 1e-10)
   end
@@ -163,7 +163,7 @@ y = H*truth.x(:);
 model.A = kr(model.Psi', model.G.U)';
 
 truth.Zsum = zeros(N, L);
-for i = 1:numFilters
+for i = 1:R
   truth.Z{i} = truth.x(:, i)*truth.h(:, i)';
   truth.Zsum = truth.Zsum + truth.Z{i};
 end
