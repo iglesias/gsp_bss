@@ -4,10 +4,8 @@ function twograph_bss_logdet_coupling
 % https://github.com/DylanMuir/ParforProgMon
 % addpath ~/workspace/matlab/DylanMuir-ParforProgMon-9a1c257/
 
-num_simulations = 1000;
+num_simulations = 10;
 verbose_multigraph_bss_logdet = false;
-
-params.numGraphs = 2;
 
 COUPLING = [0.0 0.4 0.7 0.9 0.95 1.0];
 NN = [50 100];
@@ -25,9 +23,9 @@ for coupling = COUPLING, for N = NN, for L = LL, for S = SS
   params.L = L;
   params.S = S;
 
-  ppm = ParforProgMon(sprintf('coupling%03d ', coupling*100), num_simulations);
+  % ppm = ParforProgMon(sprintf('coupling%03d ', coupling*100), num_simulations);
   parfor n = 1:num_simulations
-    [truth, model, y] = multigraph_bss_gen_problem(params);
+    [truth, model, y] = twograph_coupling_bss_gen_problem(params);
     [Z_hat, iter] = multigraph_bss_logdet(y, model.A, model.V, ...
                                           verbose_multigraph_bss_logdet);
 
@@ -36,7 +34,7 @@ for coupling = COUPLING, for N = NN, for L = LL, for S = SS
       success(n) = 1;
       iters_to_solve(n) = iter;
     end
-    ppm.increment();
+    % ppm.increment();
   end
 
   time = toc;
