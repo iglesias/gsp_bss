@@ -16,13 +16,13 @@ Diffusion of signals defined on the nodes of a graph is a generalization of the 
 ### Scenario 1. Single random graph (multiple diffusing filters on the same graph).
 
 ```Matlab
->> addpath('experiment_singlegraph_bss_logdet')
+>> addpath experiment/experiment_singlegraph_bss_logdet
 >> singlegraph_bss_logdet_N_S_numFilters
 >> % Long for 1000 simulations!
->> Alternative: use pre-generated mat files in experiment_singlegraph_bss_logdet.
+>> % Alternatively, there are pre-generated mat files
+>> % in experiment/experiment_singlegraph_bss_logdet.
 
 >> % Crunch data from mat files and produce mean and median RMSE plots.
->> cd experiment_singlegraph_bss_logdet
 >> analysis_singlegraph_bss_logdet
 ```
 
@@ -32,10 +32,10 @@ TODO
 ### Scenario 3. Multiple brain graphs.
 
 ```Matlab
->> addpath('experiment_brain_bss_logdet')
+>> addpath experiment/experiment_brain_bss_logdet
 >> brain_bss_logdet_S_numGraphs
 >> % Very long for 1000 simulations!
->> Alternative: use pre-generated mat files in experiment_brain_bss_logdet.
+>> % Pre-generated mat files in experiment/experiment_brain_bss_logdet.
 
 >> % Produce plot.
 >> cd experiment_brain_bss_logdet
