@@ -38,6 +38,5 @@ TODO
 >> % Pre-generated mat files in experiment/experiment_brain_bss_logdet.
 
 >> % Produce plot.
->> cd experiment_brain_bss_logdet
 >> brain_bss_logdet_S_numGraphs_figure
 ```
