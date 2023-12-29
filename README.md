@@ -40,7 +40,3 @@ TODO
 >> % Produce plot.
 >> brain_bss_logdet_S_numGraphs_figure
 ```
-
-## Moar
-
-[Dale](https://htmlpreview.github.io/?https://github.com/iglesias/gsp_bss/blob/baa022735d4c8754d78fa281aa828d97ab200288/theory/blind_demixing_20231202.html)
