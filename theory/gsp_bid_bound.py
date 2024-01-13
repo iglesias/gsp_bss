@@ -30,8 +30,7 @@ print(f'N={N}, S={S}, Omega={Omega}')
 import numpy as np
 
 # Directed cycle.
-GSO = np.diag(np.ones(N-1), 1)
-GSO[-1,0] = 1
+GSO = np.eye(N,N,-1) + np.eye(N,N,N-1)
 
 eigvals, V = np.linalg.eig(GSO)
 V = np.matrix(V)
@@ -65,9 +64,9 @@ for i in range(N):
 
     print('*'*100)
     A = np.conj(u_i) @ u_i.T
-    print('conjugate(u_i) transpose(u_i) = ')
+    #print('conjugate(u_i) transpose(u_i) = ')
     matrix = A
-    print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in matrix]))
+    #print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in matrix]))
 
 print('#'*100)
 b = np.linalg.norm(np.conj(U).T @ U - N*np.eye(N))
